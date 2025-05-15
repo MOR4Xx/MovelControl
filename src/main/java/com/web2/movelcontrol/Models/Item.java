@@ -8,7 +8,7 @@ public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     @Column(nullable = false, length = 100)
     private String nome;
     @Column(nullable = false, length = 150)
@@ -27,7 +27,7 @@ public class Item {
     public Item() {
     }
 
-    public Item(int id, String nome, String descricao, String unidade_medida, Double preco_unitario, int quantidade_estoque, PedidoFornecedor pedidoFornecedor) {
+    public Item(Integer id, String nome, String descricao, String unidade_medida, Double preco_unitario, int quantidade_estoque, PedidoFornecedor pedidoFornecedor) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
@@ -37,7 +37,7 @@ public class Item {
         this.pedidoFornecedor = pedidoFornecedor;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

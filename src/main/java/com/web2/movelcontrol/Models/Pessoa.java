@@ -7,7 +7,7 @@ public abstract class Pessoa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     @Column(nullable = false, length = 50)
     private String nome;
     @Column(nullable = false, length = 50)
@@ -20,7 +20,7 @@ public abstract class Pessoa {
     public Pessoa() {
     }
 
-    public Pessoa(int id, String nome, String telefone, String email, String endereco) {
+    public Pessoa(Integer id, String nome, String telefone, String email, String endereco) {
         this.id = id;
         this.nome = nome;
         this.telefone = telefone;
@@ -28,7 +28,7 @@ public abstract class Pessoa {
         this.endereco = endereco;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

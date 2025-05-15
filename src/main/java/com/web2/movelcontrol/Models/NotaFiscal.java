@@ -8,7 +8,7 @@ import java.util.Date;
 public class NotaFiscal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     @Column(nullable = false)
     private long codigo;
     @Temporal(TemporalType.DATE)

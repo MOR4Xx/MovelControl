@@ -1,6 +1,7 @@
 package com.web2.movelcontrol.Models;
 
 import jakarta.persistence.*;
+import org.springframework.data.relational.core.sql.In;
 
 import java.util.Date;
 
@@ -10,7 +11,7 @@ public class Pedido {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "data_pedido", nullable = false)
@@ -29,13 +30,13 @@ public class Pedido {
     public Pedido() {
     }
 
-    public Pedido(int id, Date data_pedido, Orcamento orcamento) {
+    public Pedido(Integer id, Date data_pedido, Orcamento orcamento) {
         this.id = id;
         this.data_pedido = data_pedido;
         this.orcamento = orcamento;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

@@ -1,6 +1,7 @@
 package com.web2.movelcontrol.Models;
 
 import jakarta.persistence.*;
+import org.springframework.data.relational.core.sql.In;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,7 +12,7 @@ import java.util.List;
 public class PedidoFornecedor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     @Column(name = "data_pedido")
     private Date dataPedido;
     @Column(name = "status")
@@ -23,14 +24,14 @@ public class PedidoFornecedor {
 
     }
 
-    public PedidoFornecedor(int id, Date dataPedido, String status, List<Item> itens_pedido) {
+    public PedidoFornecedor(Integer id, Date dataPedido, String status, List<Item> itens_pedido) {
         this.id = id;
         this.dataPedido = dataPedido;
         this.status = status;
         this.itens_pedido = itens_pedido;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

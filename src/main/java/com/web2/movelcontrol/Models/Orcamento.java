@@ -10,7 +10,7 @@ import java.util.List;
 public class Orcamento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "data_criacao", nullable = false)
@@ -35,8 +35,8 @@ public class Orcamento {
     public Orcamento() {
     }
 
-    public Orcamento(int id_orcamento, Date dataCriacao, double valorTotal, String status, List<Item> listaMateriais, Pessoa cliente) {
-        this.id = id_orcamento;
+    public Orcamento(Integer id, Date dataCriacao, double valorTotal, String status, List<Item> listaMateriais, Pessoa cliente) {
+        this.id = id;
         this.dataCriacao = dataCriacao;
         this.valorTotal = valorTotal;
         this.status = status;
@@ -44,7 +44,7 @@ public class Orcamento {
         //this.cliente = cliente;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
