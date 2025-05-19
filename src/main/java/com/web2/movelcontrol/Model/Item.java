@@ -1,4 +1,4 @@
-package com.web2.movelcontrol.Models;
+package com.web2.movelcontrol.Model;
 
 import jakarta.persistence.*;
 
@@ -8,7 +8,7 @@ public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     @Column(nullable = false, length = 100)
     private String nome;
     @Column(nullable = false, length = 150)

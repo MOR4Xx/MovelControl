@@ -1,7 +1,7 @@
-package com.web2.movelcontrol.Services;
+package com.web2.movelcontrol.Service;
 
 import com.web2.movelcontrol.Exceptions.NotFoundException;
-import com.web2.movelcontrol.Models.PessoaJuridica;
+import com.web2.movelcontrol.Model.PessoaJuridica;
 import com.web2.movelcontrol.Repository.PessoaJuridicaRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +21,13 @@ public class PessoaJuridicaService {
         return repository.save(pj);
     }
 
-    public PessoaJuridica findById(Integer id) {
+    public PessoaJuridica findById(Long id) {
         logger.info("Pessoa Jurídica buscada por ID: " + id);
         return repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Pessoa Jurídica não encontrada com ID: " + id));
     }
 
-    public PessoaJuridica update(Integer id, PessoaJuridica novaPessoa){
+    public PessoaJuridica update(Long id, PessoaJuridica novaPessoa){
         PessoaJuridica antigo = repository.findById(id)
                 .orElseThrow(()-> new NotFoundException("Pessoa Juridica "+id));
 
@@ -40,7 +40,7 @@ public class PessoaJuridicaService {
         return repository.save(antigo);
     }
 
-    public void delete(Integer id){
+    public void delete(Long id){
         repository.deleteById(id);
         logger.info("Pessoa Juridica Apagada com sucesso");
     }

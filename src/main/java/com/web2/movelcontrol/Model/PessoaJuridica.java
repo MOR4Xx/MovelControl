@@ -1,4 +1,4 @@
-package com.web2.movelcontrol.Models;
+package com.web2.movelcontrol.Model;
 
 import jakarta.persistence.*;
 

@@ -1,4 +1,4 @@
-package com.web2.movelcontrol.Models;
+package com.web2.movelcontrol.Model;
 
 import jakarta.persistence.*;
 
@@ -7,7 +7,7 @@ public abstract class Pessoa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     @Column(nullable = false, length = 50)
     private String nome;
     @Column(nullable = false, length = 50)

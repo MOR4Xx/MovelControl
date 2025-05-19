@@ -1,4 +1,4 @@
-package com.web2.movelcontrol.Models;
+package com.web2.movelcontrol.Model;
 
 import jakarta.persistence.*;
 
@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class Fornecedor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;

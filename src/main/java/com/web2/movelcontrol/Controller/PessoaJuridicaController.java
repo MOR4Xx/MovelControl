@@ -1,12 +1,10 @@
-package com.web2.movelcontrol.Controllers;
+package com.web2.movelcontrol.Controller;
 
-import com.web2.movelcontrol.Models.PessoaJuridica;
-import com.web2.movelcontrol.Services.PessoaJuridicaService;
+import com.web2.movelcontrol.Model.PessoaJuridica;
+import com.web2.movelcontrol.Service.PessoaJuridicaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/pj")
@@ -24,7 +22,6 @@ public class PessoaJuridicaController {
     public PessoaJuridica atualizarPessoaJuridica(@PathVariable Integer id, @RequestBody PessoaJuridica pj){
         return service.update(id, pj);
     }
-
 
     @DeleteMapping(value = "/deletar/{id}")
     public void deletePessoaJuridica(@PathVariable Integer id) {
