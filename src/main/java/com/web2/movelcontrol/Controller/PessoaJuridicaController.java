@@ -19,12 +19,12 @@ public class PessoaJuridicaController {
     }
 
     @PutMapping("/atualizar/{id}")
-    public PessoaJuridica atualizarPessoaJuridica(@PathVariable Integer id, @RequestBody PessoaJuridica pj){
+    public PessoaJuridica atualizarPessoaJuridica(@PathVariable Long id, @RequestBody PessoaJuridica pj){
         return service.update(id, pj);
     }
 
     @DeleteMapping(value = "/deletar/{id}")
-    public void deletePessoaJuridica(@PathVariable Integer id) {
+    public void deletePessoaJuridica(@PathVariable Long id) {
         service.delete(id);
     }
 }

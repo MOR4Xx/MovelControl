@@ -20,13 +20,13 @@ public class PessoaFisicaController {
     }
 
     @PutMapping("/atualizar/{id}")
-    public PessoaFisica atualizarPessoaFisica(@PathVariable Integer id, @RequestBody PessoaFisica pf){
+    public PessoaFisica atualizarPessoaFisica(@PathVariable Long id, @RequestBody PessoaFisica pf){
         return service.update(id, pf);
     }
 
 
     @DeleteMapping(value = "/deletar/{id}")
-    public void deletePessoaFIsica(@PathVariable Integer id) {
+    public void deletePessoaFIsica(@PathVariable Long id) {
         service.delete(id);
     }
 }
