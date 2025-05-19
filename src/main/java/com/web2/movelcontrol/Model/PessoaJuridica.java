@@ -10,14 +10,13 @@ public class PessoaJuridica extends Pessoa {
     private String cnpj;
 
     @Column(name = "tipo", nullable = false, length = 10)
-    private String tipo;
+    private String tipo = "JURIDICA";
 
     public PessoaJuridica() {}
 
     public PessoaJuridica(Long id, String nome, String telefone, String email, String endereco, String cnpj) {
         super(id, nome, telefone, email, endereco);
         this.cnpj = cnpj;
-        this.tipo = "juridica";
     }
 
     public String getCnpj() {
@@ -26,5 +25,13 @@ public class PessoaJuridica extends Pessoa {
 
     public void setCnpj(String cnpj) {
         this.cnpj = cnpj;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 }
