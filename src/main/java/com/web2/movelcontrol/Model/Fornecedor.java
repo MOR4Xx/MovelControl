@@ -23,7 +23,7 @@ public class Fornecedor {
     public Fornecedor() {
     }
 
-    public Fornecedor(int id, String nome, String cnpj, String telefone, String email, String endereco) {
+    public Fornecedor(Long id, String nome, String cnpj, String telefone, String email, String endereco) {
         this.id = id;
         this.nome = nome;
         this.cnpj = cnpj;
@@ -32,11 +32,11 @@ public class Fornecedor {
         this.endereco = endereco;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

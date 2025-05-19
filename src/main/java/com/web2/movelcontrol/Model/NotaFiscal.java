@@ -23,7 +23,7 @@ public class NotaFiscal {
     public NotaFiscal() {
     }
 
-    public NotaFiscal(int id, long codigo, Date data_emissao, Double valor, Pedido pedido) {
+    public NotaFiscal(Long id, long codigo, Date data_emissao, Double valor, Pedido pedido) {
         this.id = id;
         this.codigo = codigo;
         this.data_emissao = data_emissao;
@@ -31,11 +31,11 @@ public class NotaFiscal {
         this.pedido = pedido;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

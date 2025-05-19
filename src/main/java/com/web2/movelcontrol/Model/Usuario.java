@@ -20,7 +20,7 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(Integer id, String nome, String email, String senha, String nivel_acesso) {
+    public Usuario(Long id, String nome, String email, String senha, String nivel_acesso) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -28,11 +28,11 @@ public class Usuario {
         this.nivel_acesso = nivel_acesso;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

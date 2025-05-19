@@ -35,7 +35,7 @@ public class Orcamento {
     public Orcamento() {
     }
 
-    public Orcamento(Integer id, Date dataCriacao, double valorTotal, String status, List<Item> listaMateriais, Pessoa cliente) {
+    public Orcamento(Long id, Date dataCriacao, double valorTotal, String status, List<Item> listaMateriais, Pessoa cliente) {
         this.id = id;
         this.dataCriacao = dataCriacao;
         this.valorTotal = valorTotal;
@@ -44,11 +44,11 @@ public class Orcamento {
         //this.cliente = cliente;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id_orcamento) {
+    public void setId(Long id_orcamento) {
         this.id = id_orcamento;
     }
 

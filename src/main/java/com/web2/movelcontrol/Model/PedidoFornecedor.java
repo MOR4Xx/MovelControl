@@ -23,18 +23,18 @@ public class PedidoFornecedor {
 
     }
 
-    public PedidoFornecedor(Integer id, Date dataPedido, String status, List<Item> itens_pedido) {
+    public PedidoFornecedor(Long id, Date dataPedido, String status, List<Item> itens_pedido) {
         this.id = id;
         this.dataPedido = dataPedido;
         this.status = status;
         this.itens_pedido = itens_pedido;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

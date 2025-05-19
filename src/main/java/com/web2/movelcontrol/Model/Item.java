@@ -27,7 +27,7 @@ public class Item {
     public Item() {
     }
 
-    public Item(Integer id, String nome, String descricao, String unidade_medida, Double preco_unitario, int quantidade_estoque, PedidoFornecedor pedidoFornecedor) {
+    public Item(Long id, String nome, String descricao, String unidade_medida, Double preco_unitario, int quantidade_estoque, PedidoFornecedor pedidoFornecedor) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
@@ -37,11 +37,11 @@ public class Item {
         this.pedidoFornecedor = pedidoFornecedor;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
