@@ -9,5 +9,4 @@ public class MovelControlApplication {
     public static void main(String[] args) {
         SpringApplication.run(MovelControlApplication.class, args);
     }
-// teste de comit
 }
