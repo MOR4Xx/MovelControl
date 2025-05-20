@@ -14,13 +14,15 @@ public abstract class Pessoa {
     private String telefone;
     @Column(nullable = false, length = 50)
     private String email;
-    @Column(length = 100)
-    private String endereco;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "endereco", referencedColumnName = "id")
+    private Endereco endereco;
 
     public Pessoa() {
     }
 
-    public Pessoa(Long id, String nome, String telefone, String email, String endereco) {
+    public Pessoa(Long id, String nome, String telefone, String email, Endereco endereco) {
         this.id = id;
         this.nome = nome;
         this.telefone = telefone;
@@ -60,11 +62,11 @@ public abstract class Pessoa {
         this.email = email;
     }
 
-    public String getEndereco() {
+    public Endereco getEndereco() {
         return endereco;
     }
 
-    public void setEndereco(String endereco) {
+    public void setEndereco(Endereco endereco) {
         this.endereco = endereco;
     }
 }
