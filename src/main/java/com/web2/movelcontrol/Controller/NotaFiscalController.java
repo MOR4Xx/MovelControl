@@ -24,7 +24,7 @@ public class NotaFiscalController {
     public void atualizarNotaFiscal(@PathVariable Long id, @RequestBody NotaFiscal notaFiscal){
         service.update(notaFiscal.getId(), notaFiscal);
     }
-    @PostMapping(value = "/deletar/{id}")
+    @DeleteMapping(value = "/deletar/{id}")
     public void deletarNotaFiscal(@PathVariable Long id){
         service.delete(id);
     }
