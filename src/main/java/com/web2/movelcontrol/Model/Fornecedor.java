@@ -13,7 +13,7 @@ public class Fornecedor {
     private String nome;
     @Column(name = "cnpj", nullable = false, length = 14)
     private String cnpj;
-    @Column(name = "telefone", length = 11)
+    @Column(name = "telefone", length = 20)
     private String telefone;
     @Column(name = "email", length = 100)
     private String email;
@@ -79,5 +79,7 @@ public class Fornecedor {
     public void setEndereco(String endereco) {
         this.endereco = endereco;
     }
+
+    
 }
 
