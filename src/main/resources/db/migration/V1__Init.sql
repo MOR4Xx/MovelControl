@@ -70,7 +70,6 @@ CREATE TABLE pessoa
     nome          VARCHAR(50) NOT NULL,
     telefone      VARCHAR(50) NOT NULL,
     email         VARCHAR(50) NOT NULL,
-    endereco      VARCHAR(100) NULL,
     identificador VARCHAR(50) NOT NULL,
     tipo          VARCHAR(10) NOT NULL,
     CONSTRAINT pk_pessoa PRIMARY KEY (id)
