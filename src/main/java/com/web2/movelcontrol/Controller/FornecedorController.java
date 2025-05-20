@@ -17,7 +17,7 @@ import com.web2.movelcontrol.Service.FornecedorService;
 
 @RestController
 @RequestMapping("/fornecedor")
-public class fornecedorController {
+public class FornecedorController {
 
     @Autowired
     FornecedorService service;

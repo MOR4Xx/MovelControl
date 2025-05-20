@@ -19,7 +19,8 @@ public class UsuarioController {
         return service.create(usuario);
     }
 
-    @PutMapping("/atualizar/{id}")
+    @PutMapping(value = "/atualizar/{id}"
+            , consumes = MediaType.APPLICATION_JSON_VALUE)
     public Usuario atualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario){
         return service.update(id, usuario);
     }

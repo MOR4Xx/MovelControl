@@ -8,15 +8,12 @@ CREATE TABLE endereco (
                           bairro VARCHAR(100)
 );
 
--- 2. Remove a coluna de endereco
-ALTER TABLE pessoa
-    DROP COLUMN endereco;
 
--- 3. Adicionar coluna endereco_id à tabela pessoa
+-- 2. Adicionar coluna endereco_id à tabela pessoa
 ALTER TABLE pessoa
     ADD COLUMN endereco_id BIGINT;
 
--- 4. Criar a foreign key
+-- 3. Criar a foreign key
 ALTER TABLE pessoa
     ADD CONSTRAINT fk_pessoa_endereco
         FOREIGN KEY (endereco_id) REFERENCES endereco(id);

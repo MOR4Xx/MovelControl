@@ -3,6 +3,7 @@ package com.web2.movelcontrol.Model;
 import jakarta.persistence.*;
 
 import java.util.Date;
+
 @Entity
 @Table(name = "nota_fiscal")
 public class NotaFiscal {
@@ -10,7 +11,7 @@ public class NotaFiscal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private long codigo;
+    private long codigoDeBarras;
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
     private Date data_emissao;
@@ -23,9 +24,9 @@ public class NotaFiscal {
     public NotaFiscal() {
     }
 
-    public NotaFiscal(Long id, long codigo, Date data_emissao, Double valor, Pedido pedido) {
+    public NotaFiscal(Long id, long codigoDeBarras, Date data_emissao, Double valor, Pedido pedido) {
         this.id = id;
-        this.codigo = codigo;
+        this.codigoDeBarras = codigoDeBarras;
         this.data_emissao = data_emissao;
         this.valor = valor;
         this.pedido = pedido;
@@ -39,12 +40,12 @@ public class NotaFiscal {
         this.id = id;
     }
 
-    public long getCodigo() {
-        return codigo;
+    public long getCodigoDeBarras() {
+        return codigoDeBarras;
     }
 
-    public void setCodigo(long codigo) {
-        this.codigo = codigo;
+    public void setCodigoDeBarras(long codigo) {
+        this.codigoDeBarras = codigo;
     }
 
     public Date getData_emissao() {
