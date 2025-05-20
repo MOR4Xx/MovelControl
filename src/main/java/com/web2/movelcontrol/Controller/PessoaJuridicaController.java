@@ -18,7 +18,8 @@ public class PessoaJuridicaController {
         return service.create(pj);
     }
 
-    @PutMapping("/atualizar/{id}")
+    @PutMapping(value = "/atualizar/{id}"
+            , consumes = MediaType.APPLICATION_JSON_VALUE)
     public PessoaJuridica atualizarPessoaJuridica(@PathVariable Long id, @RequestBody PessoaJuridica pj) {
         return service.update(id, pj);
     }
