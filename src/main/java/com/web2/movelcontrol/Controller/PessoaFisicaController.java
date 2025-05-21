@@ -19,7 +19,8 @@ public class PessoaFisicaController {
         return service.create(pf);
     }
 
-    @PutMapping("/atualizar/{id}")
+    @PutMapping(value = "/atualizar/{id}"
+            , consumes = MediaType.APPLICATION_JSON_VALUE)
     public PessoaFisica atualizarPessoaFisica(@PathVariable Long id, @RequestBody PessoaFisica pf){
         return service.update(id, pf);
     }
