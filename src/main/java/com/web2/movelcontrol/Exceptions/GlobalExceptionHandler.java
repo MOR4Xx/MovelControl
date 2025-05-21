@@ -31,4 +31,6 @@ public class GlobalExceptionHandler {
         response.put("message", message);
         return ResponseEntity.status(status).body(response);
     }
+
+
 }
