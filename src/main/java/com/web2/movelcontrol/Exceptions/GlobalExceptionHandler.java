@@ -1,6 +1,5 @@
 package com.web2.movelcontrol.Exceptions;
 
-import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 
 import java.time.LocalDateTime;

@@ -1,0 +1,1 @@
+ALTER TABLE fornecedor MODIFY COLUMN telefone VARCHAR(20);
