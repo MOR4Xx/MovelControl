@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.web2.movelcontrol.Model.Fornecedor;
-import com.web2.movelcontrol.Model.Fornecedor;
 import com.web2.movelcontrol.Service.FornecedorService;
 
 
