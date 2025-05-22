@@ -16,7 +16,7 @@ public abstract class Pessoa {
     private String email;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "endereco", referencedColumnName = "id")
+    @JoinColumn(name = "endereco_id", referencedColumnName = "id")
     private Endereco endereco;
 
     public Pessoa() {

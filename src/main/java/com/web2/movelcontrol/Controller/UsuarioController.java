@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/usuario")
 public class UsuarioController {
@@ -19,7 +21,18 @@ public class UsuarioController {
         return service.create(usuario);
     }
 
-    @PutMapping("/atualizar/{id}")
+    @GetMapping("/{id}")
+    public Usuario findById(@PathVariable Long id){
+        return service.findById(id);
+    }
+
+    @GetMapping("/nome/{nome}")
+    public List<Usuario> findByNome(@PathVariable String nome){
+        return service.findByNome(nome);
+    }
+
+    @PutMapping(value = "/atualizar/{id}"
+            , consumes = MediaType.APPLICATION_JSON_VALUE)
     public Usuario atualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario){
         return service.update(id, usuario);
     }

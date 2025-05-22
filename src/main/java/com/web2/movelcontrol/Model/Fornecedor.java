@@ -17,13 +17,15 @@ public class Fornecedor {
     private String telefone;
     @Column(name = "email", length = 100)
     private String email;
-    @Column(name = "endereco", length = 100)
-    private String endereco;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "endereco_id", referencedColumnName = "id")
+    private Endereco endereco;
 
     public Fornecedor() {
     }
 
-    public Fornecedor(Long id, String nome, String cnpj, String telefone, String email, String endereco) {
+    public Fornecedor(Long id, String nome, String cnpj, String telefone, String email, Endereco endereco) {
         this.id = id;
         this.nome = nome;
         this.cnpj = cnpj;
@@ -72,11 +74,11 @@ public class Fornecedor {
         this.email = email;
     }
 
-    public String getEndereco() {
+    public Endereco getEndereco() {
         return endereco;
     }
 
-    public void setEndereco(String endereco) {
+    public void setEndereco(Endereco endereco) {
         this.endereco = endereco;
     }
 
