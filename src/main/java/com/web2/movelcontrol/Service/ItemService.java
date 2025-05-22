@@ -33,7 +33,7 @@ public class ItemService {
         itemAntigo.setId(itemNovo.getId());
         itemAntigo.setNome(itemNovo.getNome());
         itemAntigo.setDescricao(itemNovo.getDescricao());
-        itemAntigo.setPreco_unitario(itemNovo.getPreco_unitario());
+        itemAntigo.setPrecoUnitario(itemNovo.getPrecoUnitario());
 
         logger.info("Item atualizado com sucesso");
         return repository.save(itemAntigo);
