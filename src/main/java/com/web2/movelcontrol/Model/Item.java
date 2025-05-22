@@ -9,33 +9,37 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false, length = 100)
     private String nome;
+
     @Column(nullable = false, length = 150)
     private String descricao;
+
     @Column(nullable = false, length = 10)
     private String unidade_medida;
-    @Column(nullable = false, length = 10)
+
+    @Column(nullable = false)
     private Double preco_unitario;
-    @Column(nullable = false, length = 10)
+
+    @Column(nullable = false)
     private int quantidade_estoque;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pedido_id")
-    private PedidoFornecedor pedidoFornecedor;
-
+    // Construtores
     public Item() {
     }
 
-    public Item(Long id, String nome, String descricao, String unidade_medida, Double preco_unitario, int quantidade_estoque, PedidoFornecedor pedidoFornecedor) {
+    public Item(Long id, String nome, String descricao, String unidade_medida,
+                Double preco_unitario, int quantidade_estoque) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
         this.unidade_medida = unidade_medida;
         this.preco_unitario = preco_unitario;
         this.quantidade_estoque = quantidade_estoque;
-        this.pedidoFornecedor = pedidoFornecedor;
     }
+
+    // Getters e Setters
 
     public Long getId() {
         return id;
@@ -84,13 +88,4 @@ public class Item {
     public void setQuantidade_estoque(int quantidade_estoque) {
         this.quantidade_estoque = quantidade_estoque;
     }
-
-    public PedidoFornecedor getPedidoFornecedor() {
-        return pedidoFornecedor;
-    }
-
-    public void setPedidoFornecedor(PedidoFornecedor pedidoFornecedor) {
-        this.pedidoFornecedor = pedidoFornecedor;
-    }
 }
-
