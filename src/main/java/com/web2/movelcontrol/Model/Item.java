@@ -14,9 +14,9 @@ public class Item {
     @Column(nullable = false, length = 150)
     private String descricao;
     @Column(nullable = false, length = 10)
-    private String unidade_medida;
+    private String unidadeMedida;
     @Column(nullable = false, length = 10)
-    private Double preco_unitario;
+    private Double precoUnitario;
     @Column(nullable = false, length = 10)
     private int quantidade_estoque;
 
@@ -24,16 +24,17 @@ public class Item {
     @JoinColumn(name = "pedido_id")
     private PedidoFornecedor pedidoFornecedor;
 
+
     public Item() {
     }
 
-    public Item(Long id, String nome, String descricao, String unidade_medida, Double preco_unitario, int quantidade_estoque, PedidoFornecedor pedidoFornecedor) {
+    public Item(Long id, String nome, String descricao, String unidade_medida, Double precoUnitario, int quantidadeEstoque, PedidoFornecedor pedidoFornecedor) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
-        this.unidade_medida = unidade_medida;
-        this.preco_unitario = preco_unitario;
-        this.quantidade_estoque = quantidade_estoque;
+        this.unidadeMedida = unidade_medida;
+        this.precoUnitario = precoUnitario;
+        this.quantidade_estoque = quantidadeEstoque;
         this.pedidoFornecedor = pedidoFornecedor;
     }
 
@@ -61,20 +62,20 @@ public class Item {
         this.descricao = descricao;
     }
 
-    public String getUnidade_medida() {
-        return unidade_medida;
+    public String getUnidadeMedida() {
+        return unidadeMedida;
     }
 
-    public void setUnidade_medida(String unidade_medida) {
-        this.unidade_medida = unidade_medida;
+    public void setUnidadeMedida(String unidade_medida) {
+        this.unidadeMedida = unidade_medida;
     }
 
-    public Double getPreco_unitario() {
-        return preco_unitario;
+    public Double getPrecoUnitario() {
+        return precoUnitario;
     }
 
-    public void setPreco_unitario(Double preco_unitario) {
-        this.preco_unitario = preco_unitario;
+    public void setPrecoUnitario(Double preco_unitario) {
+        this.precoUnitario = preco_unitario;
     }
 
     public int getQuantidade_estoque() {
