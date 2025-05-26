@@ -2,7 +2,6 @@ package com.web2.movelcontrol.Model;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -16,18 +15,16 @@ public class PedidoFornecedor {
     private Date dataPedido;
     @Column(name = "status")
     private String status;
-    @OneToMany(mappedBy = "pedidoFornecedor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Item> itens_pedido = new ArrayList<>();
+
 
     public PedidoFornecedor() {
 
     }
 
-    public PedidoFornecedor(Long id, Date dataPedido, String status, List<Item> itens_pedido) {
+    public PedidoFornecedor(Long id, Date dataPedido, String status) {
         this.id = id;
         this.dataPedido = dataPedido;
         this.status = status;
-        this.itens_pedido = itens_pedido;
     }
 
     public Long getId() {
@@ -52,13 +49,5 @@ public class PedidoFornecedor {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public List<Item> getItens_pedido() {
-        return itens_pedido;
-    }
-
-    public void setItens_pedido(List<Item> itens_pedido) {
-        this.itens_pedido = itens_pedido;
     }
 }
