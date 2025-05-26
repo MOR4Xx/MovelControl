@@ -6,6 +6,7 @@ import com.web2.movelcontrol.Repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 @Service
@@ -24,6 +25,22 @@ public class UsuarioService {
     public Usuario findById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Usuario não encontrado com ID: " + id));
+    }
+    
+    public List<Usuario> findByNome(String nome) {
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
+        }
+        
+        logger.info("Buscando usuário por nome: " + nome);
+        List<Usuario> usuarios = repository.findByNome(nome);
+
+        if (usuarios.isEmpty()) {
+            logger.warning("Nenhum usuário encontrado com o nome: " + nome);
+            throw new NotFoundException("Nenhum usuário encontrado com o nome: " + nome);
+        }
+
+        return usuarios;
     }
 
     public Usuario update(Long id, Usuario usuarioNovo){

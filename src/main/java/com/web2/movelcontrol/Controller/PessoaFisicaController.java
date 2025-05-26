@@ -19,6 +19,11 @@ public class PessoaFisicaController {
         return service.create(pf);
     }
 
+    @GetMapping("/{id}")
+    public PessoaFisica findById(@PathVariable Long id) {
+        return service.findById(id);
+    }
+
     @PutMapping(value = "/atualizar/{id}"
             , consumes = MediaType.APPLICATION_JSON_VALUE)
     public PessoaFisica atualizarPessoaFisica(@PathVariable Long id, @RequestBody PessoaFisica pf){
