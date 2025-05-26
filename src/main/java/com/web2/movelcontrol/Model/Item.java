@@ -20,22 +20,16 @@ public class Item {
     @Column(nullable = false, length = 10)
     private int quantidade_estoque;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pedido_id")
-    private PedidoFornecedor pedidoFornecedor;
-
-
     public Item() {
     }
 
-    public Item(Long id, String nome, String descricao, String unidade_medida, Double precoUnitario, int quantidadeEstoque, PedidoFornecedor pedidoFornecedor) {
+    public Item(Long id, String nome, String descricao, String unidade_medida, Double precoUnitario, int quantidadeEstoque) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
         this.unidadeMedida = unidade_medida;
         this.precoUnitario = precoUnitario;
         this.quantidade_estoque = quantidadeEstoque;
-        this.pedidoFornecedor = pedidoFornecedor;
     }
 
     public Long getId() {
@@ -86,12 +80,4 @@ public class Item {
         this.quantidade_estoque = quantidade_estoque;
     }
 
-    public PedidoFornecedor getPedidoFornecedor() {
-        return pedidoFornecedor;
-    }
-
-    public void setPedidoFornecedor(PedidoFornecedor pedidoFornecedor) {
-        this.pedidoFornecedor = pedidoFornecedor;
-    }
 }
-
