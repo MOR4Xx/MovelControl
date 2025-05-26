@@ -2,12 +2,14 @@ package com.web2.movelcontrol.Controller;
 
 import com.web2.movelcontrol.Model.PessoaFisica;
 import com.web2.movelcontrol.Service.PessoaFisicaService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/pf")
+@Tag(name = "Pessoa Fisicas", description = "Operações relacionadas as Pessoas Fisicas")
 public class PessoaFisicaController {
 
     @Autowired

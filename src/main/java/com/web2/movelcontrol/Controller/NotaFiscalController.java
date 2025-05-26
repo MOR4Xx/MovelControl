@@ -3,12 +3,14 @@ package com.web2.movelcontrol.Controller;
 
 import com.web2.movelcontrol.Model.NotaFiscal;
 import com.web2.movelcontrol.Service.NotaFiscalService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/nota-fiscal")
+@Tag(name = "Nota Fiscal", description = "Operações relacionadas as Notas Fiscais")
 public class NotaFiscalController {
 
     @Autowired
