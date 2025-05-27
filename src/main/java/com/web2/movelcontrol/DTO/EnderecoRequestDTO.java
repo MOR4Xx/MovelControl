@@ -22,7 +22,6 @@ public class EnderecoRequestDTO {
     private String numero;
 
     @Schema(description = "Complemento da rua", example = "Apartamento 123")
-    @NotBlank(message = "O complemento não pode ser vazio")
     private String complemento;
 
     @Schema(description = "Bairro da Pessoa", example = "Centro")

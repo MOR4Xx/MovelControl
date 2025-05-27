@@ -30,7 +30,7 @@ public class NotaFiscalService {
                 .orElseThrow(() -> new NotFoundException("Nota fiscal não encontrada com ID: " + id));
 
         notaFiscalAntigo.setData_emissao(notaFiscal.getData_emissao());
-        notaFiscalAntigo.setCodigoDeBarras(notaFiscal.getCodigoDeBarras());
+        notaFiscalAntigo.setCodigo(notaFiscal.getCodigo());
         notaFiscalAntigo.setValor(notaFiscal.getValor());
         notaFiscalAntigo.setPedido(notaFiscal.getPedido());
 

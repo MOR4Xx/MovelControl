@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.Objects;
 
-@Schema(description = "DTO para criação e atualização de pessoas jurídicas")
+@Schema(name = "PessoaJuridicaRequestDTO",description = "DTO para criação e atualização de pessoas jurídicas")
 public class PessoaJuridicaRequestDTO {
 
     @Schema(description = "Nome da pessoa jurídica", example = "Jorge")
@@ -15,18 +15,18 @@ public class PessoaJuridicaRequestDTO {
     private String nome;
 
     @Schema(description = "CNPJ da pessoa jurídica", example = "11.111.111/0001-89")
-    @NotBlank(message = "O CNPJ não pode ser vazio")
-    @org.hibernate.validator.constraints.br.CNPJ(message = "O CNPJ deve ser válido")
+    @NotBlank(message = "O cnpj não pode ser nulo")
     private String cnpj;
 
-    @Schema(description = "E-mail da pessoa jurídica", example = "<EMAIL>")
+    @Schema(description = "E-mail da pessoa jurídica", example = "jorge@gmail.com")
     @NotBlank(message = "O email não pode ser vazio")
-    @Email(message = "O email deve ser válido")
     private String email;
 
+    @Schema(description = "Telefone da pessoa juridica", example = "(64)99999-9999")
+    private String telefone;
+
     @Schema(description = "Tipo da pessoa jurídica", example = "JURIDICA")
-    @NotNull(message = "O tipo não pode ser vazio")
-    private String tipo;
+    private String tipo = "JURIDICA";
 
     @Schema(description = "Endereço da pessoa jurídica", required = true, implementation = EnderecoRequestDTO.class)
     @NotNull(message = "O endereço não pode ser vazio")
@@ -73,6 +73,14 @@ public class PessoaJuridicaRequestDTO {
 
     public void setEndereco(EnderecoRequestDTO endereco) {
         this.endereco = endereco;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
     }
 
     @Override

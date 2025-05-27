@@ -11,7 +11,7 @@ public class NotaFiscal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private String codigoDeBarras;
+    private String codigo;
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
     private Date data_emissao;
@@ -26,7 +26,7 @@ public class NotaFiscal {
 
     public NotaFiscal(Long id, String codigoDeBarras, Date data_emissao, Double valor, Pedido pedido) {
         this.id = id;
-        this.codigoDeBarras = codigoDeBarras;
+        this.codigo = codigoDeBarras;
         this.data_emissao = data_emissao;
         this.valor = valor;
         this.pedido = pedido;
@@ -40,12 +40,12 @@ public class NotaFiscal {
         this.id = id;
     }
 
-    public String getCodigoDeBarras() {
-        return codigoDeBarras;
+    public String getCodigo() {
+        return codigo;
     }
 
-    public void setCodigoDeBarras(String codigoDeBarras) {
-        this.codigoDeBarras = codigoDeBarras;
+    public void setCodigo(String codigoDeBarras) {
+        this.codigo = codigoDeBarras;
     }
 
     public Date getData_emissao() {

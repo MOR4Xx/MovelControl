@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Objects;
 
-@Schema(description = "Dados de saída de pessoas jurídicas retornados pela API")
+@Schema(name = "PessoaJuridicaResponseDTO", description = "Dados de saída de pessoas jurídicas retornados pela API")
 public class PessoaJuridicaResponseDTO {
 
     @Schema(description = "Nome da pessoa jurídica", example = "Jorge")
@@ -13,7 +13,7 @@ public class PessoaJuridicaResponseDTO {
     @Schema(description = "Telefone da pessoa jurídica", example = "(11) 99999-9999")
     private String telefone;
     @Schema(description = "Endereço da pessoa jurídica", example = "Rua 1, 1234-567, São Paulo - SP")
-    private Endereco endereco;
+    private EnderecoResponseDTO endereco;
     @Schema(description = "CNPJ da pessoa juridica", example = "11.111.111/0001-89")
     private String cnpj;
     @Schema(description = "E-mail da pessoa jurídica", example = "jorge.afonso@example.com")
@@ -38,12 +38,12 @@ public class PessoaJuridicaResponseDTO {
         this.telefone = telefone;
     }
 
-    public Endereco getEndereco() {
-        return endereco;
+    public void setEndereco(EnderecoResponseDTO endereco) {
+        this.endereco = endereco;
     }
 
-    public void setEndereco(Endereco endereco) {
-        this.endereco = endereco;
+    public EnderecoResponseDTO getEndereco() {
+        return endereco;
     }
 
     public String getCnpj() {
