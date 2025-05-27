@@ -1,6 +1,9 @@
 package com.web2.movelcontrol.Controller;
 
 import com.web2.movelcontrol.DTO.*;
+import com.web2.movelcontrol.Exceptions.ConflictException;
+import com.web2.movelcontrol.Exceptions.ErrorResponseDTO;
+import com.web2.movelcontrol.Exceptions.NotFoundException;
 import com.web2.movelcontrol.Model.Endereco;
 import com.web2.movelcontrol.Model.Pessoa;
 import com.web2.movelcontrol.Model.PessoaJuridica;
@@ -25,13 +28,25 @@ public class PessoaJuridicaController {
     PessoaJuridicaService service;
 
     @Operation(
-            summary = "Buscar Pessoa Juridica por ID",
-            description = "Retorna os dados de uma Pessoa Juridica específico pelo seu ID",
+            summary = "Cria Pessoa Jurídica",
+            description = "Cria uma nova Pessoa Jurídica e retorna os dados da entidade criada.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Pessoa Juridica encontrado",
+                    @ApiResponse(responseCode = "201", description = "Pessoa Jurídica criada com sucesso.",
                             content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = PessoaJuridicaResponseDTO.class))),
-                    @ApiResponse(responseCode = "404", description = "Pessoa Juridica não encontrado")
+                                    schema = @Schema(implementation = PessoaJuridicaResponseDTO.class))
+                    ),
+                    @ApiResponse(responseCode = "400", description = "Requisição inválida devido a dados de entrada incorretos ou incompletos.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class))
+                    ),
+                    @ApiResponse(responseCode = "409", description = "Conflito. A Pessoa Jurídica com o CNPJ fornecido já existe.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class))
+                    ),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class))
+                    )
             }
     )
     @PostMapping(value = "/criar",
@@ -65,8 +80,14 @@ public class PessoaJuridicaController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "Pessoa Juridica encontrado",
                             content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = UsuarioResponseDTO.class))),
-                    @ApiResponse(responseCode = "404", description = "Pessoa Juridica não encontrado")
+                                    schema = @Schema(implementation = PessoaJuridicaResponseDTO.class))),
+                    @ApiResponse(responseCode = "404", description = "Pessoa Juridica não encontrado",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponseDTO.class))),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class))
+                    )
             }
     )
     @GetMapping("/{id}")
@@ -82,11 +103,11 @@ public class PessoaJuridicaController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Novos dados da Pessoa Jurídica",
                     required = true,
-                    content = @Content(schema = @Schema(implementation = PessoaJuridica.class))
+                    content = @Content(schema = @Schema(implementation = PessoaJuridicaResponseDTO.class))
             ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "Pessoa Jurídica atualizada com sucesso",
-                            content = @Content(schema = @Schema(implementation = PessoaJuridica.class))),
+                            content = @Content(schema = @Schema(implementation = PessoaJuridicaResponseDTO.class))),
                     @ApiResponse(responseCode = "404", description = "Pessoa Jurídica não encontrada"),
                     @ApiResponse(responseCode = "400", description = "Dados inválidos")
             }
