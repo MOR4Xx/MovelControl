@@ -9,11 +9,15 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false, length = 100)
     private String nome;
+
     @Column(nullable = false, length = 150)
     private String descricao;
+
     @Column(nullable = false, length = 10)
+
     private String unidadeMedida;
     @Column(nullable = false, length = 10)
     private Double precoUnitario;
@@ -31,6 +35,8 @@ public class Item {
         this.precoUnitario = precoUnitario;
         this.quantidade_estoque = quantidadeEstoque;
     }
+
+    // Getters e Setters
 
     public Long getId() {
         return id;
@@ -79,5 +85,4 @@ public class Item {
     public void setQuantidade_estoque(int quantidade_estoque) {
         this.quantidade_estoque = quantidade_estoque;
     }
-
 }

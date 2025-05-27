@@ -38,4 +38,11 @@ public class FornecedorService {
 
         return repository.save(antigo);
     }
+
+    public Fornecedor findById(Long id) {
+        logger.info("Fornecedor buscado por ID: " + id);
+        return repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Pessoa Fisica não encontrada com ID: " + id));
+    }
+
 }
