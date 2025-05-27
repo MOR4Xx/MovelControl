@@ -76,9 +76,9 @@ Esta interface permite visualizar todos os endpoints disponíveis, seus parâmet
 
 O desenvolvimento deste projeto contou com a colaboração dos seguintes membros:
 
-*   **Jorge Afonso (MOR4Xx):** [https://github.com/MOR4Xx](https://github.com/MOR4Xx)
-*   **Artur Duarte Monteiro (Artur-Duarte17):** [https://github.com/Artur-Duarte17](https://github.com/Artur-Duarte17)
-*   **Leandro Rosa da Silva (LDRRosa):** [https://github.com/LDRRosa](https://github.com/LDRRosa)
+*   **Jorge Afonso (MOR4Xx):** [MOR4Xx](https://github.com/MOR4Xx)
+*   **Artur Duarte Monteiro (Artur-Duarte17):** [Artur-Duarte17](https://github.com/Artur-Duarte17)
+*   **Leandro Rosa da Silva (LDRRosa):** [LDRRosa](https://github.com/LDRRosa)
 
 ## Licença
 
