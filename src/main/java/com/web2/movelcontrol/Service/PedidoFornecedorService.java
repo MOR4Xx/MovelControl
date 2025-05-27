@@ -95,4 +95,21 @@ public class PedidoFornecedorService {
         }).toList();
     }
 
+    public PedidoFornecedorResponseDTO findById(Long id) {
+        PedidoFornecedor pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("PedidoFornecedor com ID " + id + " não encontrado."));
+
+        String nomeFornecedor = pedido.getFornecedor() != null ? pedido.getFornecedor().getNome() : null;
+
+        List<ItemDTO> itens = pedido.getItens_pedido().stream()
+                .map(item -> new ItemDTO(item.getId(), item.getNome(), item.getDescricao())).toList();
+
+        return new PedidoFornecedorResponseDTO(
+                pedido.getId(),
+                pedido.getStatus(),
+                pedido.getDataPedido(),
+                nomeFornecedor,
+                itens);
+    }
+
 }

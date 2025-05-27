@@ -45,4 +45,11 @@ public class PedidoFornecedorController {
         List<PedidoFornecedorResponseDTO> pedidos = service.findAll();
         return ResponseEntity.ok(pedidos);
     }
+
+    @GetMapping("/buscar/{id}")
+    public ResponseEntity<PedidoFornecedorResponseDTO> buscarPedidoPorId(@PathVariable Long id) {
+        PedidoFornecedorResponseDTO pedido = service.findById(id);
+        return ResponseEntity.ok(pedido);
+    }
+
 }
