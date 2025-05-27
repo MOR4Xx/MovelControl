@@ -41,11 +41,10 @@ public class PedidoFornecedor {
 
     }
 
-    public PedidoFornecedor(Long id, Date dataPedido, String status, List<Item> itens_pedido) {
+    public PedidoFornecedor(Long id, Date dataPedido, String status) {
         this.id = id;
         this.dataPedido = dataPedido;
         this.status = status;
-        this.itens_pedido = itens_pedido;
     }
 
     public Long getId() {
@@ -79,4 +78,5 @@ public class PedidoFornecedor {
     public void setItens_pedido(List<Item> itens_pedido) {
         this.itens_pedido = itens_pedido;
     }
+
 }

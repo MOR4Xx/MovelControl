@@ -1,7 +1,9 @@
 package com.web2.movelcontrol.Model;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.*;
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "fornecedor")
 public class Fornecedor {
