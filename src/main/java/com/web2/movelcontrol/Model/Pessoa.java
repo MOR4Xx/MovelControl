@@ -51,7 +51,6 @@ public abstract class Pessoa { // Pode ser abstrata se não houver necessidade d
         this.endereco = endereco;
     }
     
-    // Getters e Setters permanecem os mesmos
     public Long getId() {
         return id;
     }
