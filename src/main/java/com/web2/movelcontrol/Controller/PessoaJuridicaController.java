@@ -1,13 +1,11 @@
 package com.web2.movelcontrol.Controller;
 
-import com.web2.movelcontrol.DTO.*;
-import com.web2.movelcontrol.Exceptions.ConflictException;
+import com.web2.movelcontrol.DTO.DataMapper;
+import com.web2.movelcontrol.DTO.PessoaJuridicaRequestDTO;
+import com.web2.movelcontrol.DTO.PessoaJuridicaResponseDTO;
 import com.web2.movelcontrol.Exceptions.ErrorResponseDTO;
-import com.web2.movelcontrol.Exceptions.NotFoundException;
 import com.web2.movelcontrol.Model.Endereco;
-import com.web2.movelcontrol.Model.Pessoa;
 import com.web2.movelcontrol.Model.PessoaJuridica;
-import com.web2.movelcontrol.Model.Usuario;
 import com.web2.movelcontrol.Service.PessoaJuridicaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -52,11 +50,11 @@ public class PessoaJuridicaController {
     @PostMapping(value = "/criar",
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PessoaJuridicaResponseDTO> createPessoaJuridica(@RequestBody @Valid PessoaJuridicaRequestDTO requestDTO) {
-        PessoaJuridica pjSalva = new PessoaJuridica();
-        pjSalva.setNome(requestDTO.getNome());
-        pjSalva.setTelefone(requestDTO.getTelefone());
-        pjSalva.setCnpj(requestDTO.getCnpj());
-        pjSalva.setEmail(requestDTO.getEmail());
+        PessoaJuridica pj = new PessoaJuridica();
+        pj.setNome(requestDTO.getNome());
+        pj.setTelefone(requestDTO.getTelefone());
+        pj.setCnpj(requestDTO.getCnpj());
+        pj.setEmail(requestDTO.getEmail());
 
         Endereco endereco = new Endereco();
         endereco.setCep(requestDTO.getEndereco().getCep());
@@ -65,13 +63,11 @@ public class PessoaJuridicaController {
         endereco.setNumero(requestDTO.getEndereco().getNumero());
         endereco.setComplemento(requestDTO.getEndereco().getComplemento());
 
-        pjSalva.setEndereco(endereco);
+        pj.setEndereco(endereco);
 
-        service.create(pjSalva);
+        service.create(pj);
 
-        PessoaJuridicaResponseDTO responseDTO = DataMapper.parseObject(pjSalva, PessoaJuridicaResponseDTO.class);
-
-        return ResponseEntity.ok(responseDTO);
+        return ResponseEntity.ok(DataMapper.parseObject(pj, PessoaJuridicaResponseDTO.class));
     }
 
     @Operation(
@@ -82,8 +78,8 @@ public class PessoaJuridicaController {
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = PessoaJuridicaResponseDTO.class))),
                     @ApiResponse(responseCode = "404", description = "Pessoa Juridica não encontrado",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorResponseDTO.class))),
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = PessoaJuridicaRequestDTO.class))),
                     @ApiResponse(responseCode = "500", description = "Erro interno do servidor.",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponseDTO.class))
@@ -114,8 +110,10 @@ public class PessoaJuridicaController {
     )
     @PutMapping(value = "/atualizar/{id}"
             , consumes = MediaType.APPLICATION_JSON_VALUE)
-    public PessoaJuridica atualizarPessoaJuridica(@PathVariable Long id, @RequestBody PessoaJuridica pj) {
-        return service.update(id, pj);
+    public PessoaJuridica atualizarPessoaJuridica(@PathVariable Long id, @RequestBody PessoaJuridicaRequestDTO pjDTO) {
+        PessoaJuridica pessoaJuridica = DataMapper.parseObject(pjDTO, PessoaJuridica.class);
+
+        return service.update(id, pessoaJuridica);
     }
 
     @Operation(

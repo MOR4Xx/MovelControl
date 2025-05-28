@@ -43,16 +43,16 @@ public class UsuarioService {
         return usuarios;
     }
 
-    public Usuario update(Long id, Usuario usuarioNovo){
-        Usuario usuarioAntigo = repository.findById(id)
-                .orElseThrow(()-> new NotFoundException("Usuario "+ usuarioNovo.getId()));
+    public Usuario update(Long id, Usuario usuarioUpdate){
+        Usuario usuario = repository.findById(id)
+                .orElseThrow(()-> new NotFoundException("Usuario "+ usuarioUpdate.getId()));
 
-        usuarioAntigo.setNome(usuarioNovo.getNome());
-        usuarioAntigo.setEmail(usuarioNovo.getEmail());
-        usuarioAntigo.setSenha(usuarioNovo.getSenha());
-        usuarioAntigo.setNivel_acesso(usuarioNovo.getNivel_acesso());
+        if(usuarioUpdate.getNome() != null) usuario.setNome(usuarioUpdate.getNome());
+        if (usuarioUpdate.getEmail() != null) usuario.setEmail(usuarioUpdate.getEmail());
+        if (usuarioUpdate.getSenha() != null) usuario.setSenha(usuarioUpdate.getSenha());
+        if (usuarioUpdate.getNivel_acesso() != null) usuario.setNivel_acesso(usuarioUpdate.getNivel_acesso());
 
-        return repository.save(usuarioAntigo);
+        return repository.save(usuario);
 
     }
 

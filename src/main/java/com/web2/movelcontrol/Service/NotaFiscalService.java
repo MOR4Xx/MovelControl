@@ -25,14 +25,14 @@ public class NotaFiscalService {
                 .orElseThrow(() -> new NotFoundException("Nota fiscal não encontrada com ID: " + id));
     }
 
-    public NotaFiscal update(Long id, NotaFiscal notaFiscal) {
-        NotaFiscal notaFiscalAntigo = repository.findById(id)
+    public NotaFiscal update(Long id, NotaFiscal notaFiscalUpdate) {
+        NotaFiscal notaFiscal = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Nota fiscal não encontrada com ID: " + id));
 
-        notaFiscalAntigo.setData_emissao(notaFiscal.getData_emissao());
-        notaFiscalAntigo.setCodigo(notaFiscal.getCodigo());
-        notaFiscalAntigo.setValor(notaFiscal.getValor());
-        notaFiscalAntigo.setPedido(notaFiscal.getPedido());
+        if (notaFiscalUpdate.getCodigo() != null) notaFiscal.setCodigo(notaFiscalUpdate.getCodigo());
+        if (notaFiscalUpdate.getData_emissao() != null) notaFiscal.setData_emissao(notaFiscalUpdate.getData_emissao());
+        if (notaFiscalUpdate.getPedido() != null) notaFiscal.setPedido(notaFiscalUpdate.getPedido());
+        if (notaFiscalUpdate.getValor() != null) notaFiscal.setValor(notaFiscalUpdate.getValor());
 
         return repository.save(notaFiscal);
     }

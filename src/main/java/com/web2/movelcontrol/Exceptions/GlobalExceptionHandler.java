@@ -80,7 +80,7 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
         );
 
-        ex.printStackTrace(); // 🔍 Log para depuração no console
+        ex.printStackTrace();
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
