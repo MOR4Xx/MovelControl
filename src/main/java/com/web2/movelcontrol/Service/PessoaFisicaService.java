@@ -1,6 +1,7 @@
 package com.web2.movelcontrol.Service;
 
 import com.web2.movelcontrol.Exceptions.NotFoundException;
+import com.web2.movelcontrol.Model.Endereco;
 import com.web2.movelcontrol.Model.PessoaFisica;
 import com.web2.movelcontrol.Repository.PessoaFisicaRepository;
 import org.springframework.stereotype.Service;
@@ -27,17 +28,27 @@ public class PessoaFisicaService {
                 .orElseThrow(() -> new NotFoundException("Pessoa Fisica não encontrada com ID: " + id));
     }
 
-    public PessoaFisica update(Long id, PessoaFisica novaPessoa){
-        PessoaFisica antigo = repository.findById(id)
+    public PessoaFisica update(Long id, PessoaFisica pessoaUpdate){
+        PessoaFisica pessoaFisica = repository.findById(id)
                 .orElseThrow(()-> new NotFoundException("Pessoa Fisica "+id));
 
-        antigo.setNome(novaPessoa.getNome());
-        antigo.setCpf(novaPessoa.getCpf());
-        antigo.setEmail(novaPessoa.getEmail());
-        antigo.setTelefone(novaPessoa.getTelefone());
-        antigo.setEndereco(novaPessoa.getEndereco());
+        if (pessoaUpdate.getNome() != null) pessoaFisica.setNome(pessoaUpdate.getNome());
+        if (pessoaUpdate.getCpf() != null) pessoaFisica.setCpf(pessoaUpdate.getCpf());
+        if (pessoaUpdate.getEmail() != null) pessoaFisica.setEmail(pessoaUpdate.getEmail());
+        if (pessoaUpdate.getTelefone() != null) pessoaFisica.setTelefone(pessoaUpdate.getTelefone());
+        if (pessoaUpdate.getEndereco() != null) {
+            Endereco endereco = new Endereco();
 
-        return repository.save(antigo);
+            if (endereco.getCep() != null) endereco.setCep(pessoaUpdate.getEndereco().getCep());
+            if (endereco.getRua() != null) endereco.setRua(pessoaUpdate.getEndereco().getRua());
+            if (endereco.getBairro() != null) endereco.setBairro(pessoaUpdate.getEndereco().getBairro());
+            if (endereco.getNumero() != null) endereco.setNumero(pessoaUpdate.getEndereco().getNumero());
+            if (endereco.getComplemento() != null) endereco.setComplemento(pessoaUpdate.getEndereco().getComplemento());
+
+            pessoaFisica.setEndereco(endereco);
+        }
+
+        return repository.save(pessoaFisica);
     }
 
     public void delete(Long id){

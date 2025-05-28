@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 
 import java.util.Objects;
 
-@Schema(description = "DTO para criação e atualização de usuários")
+@Schema(name = "UsuarioRequestDTO", description = "DTO para criação e atualização de usuários")
 public class UsuarioRequestDTO {
 
     @Schema(description = "Nome completo do usuário", example = "João da Silva")
