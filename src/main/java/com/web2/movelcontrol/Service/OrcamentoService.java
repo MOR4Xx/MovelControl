@@ -5,6 +5,9 @@ import com.web2.movelcontrol.Repository.OrcamentoRepository;
 import com.web2.movelcontrol.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.web2.movelcontrol.Repository.ItemRepository;
+import com.web2.movelcontrol.Model.Item;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -17,6 +20,9 @@ public class OrcamentoService {
     @Autowired
     private OrcamentoRepository orcamentoRepository;
 
+    @Autowired
+    private ItemRepository itemRepository;
+
     // Método para criar um novo orçamento
     public Orcamento criarOrcamento(Orcamento orcamento) {
         if (orcamento.getDataCriacao() == null) {
@@ -25,6 +31,29 @@ public class OrcamentoService {
         if (orcamento.getStatus() == null || orcamento.getStatus().isEmpty()) {
             orcamento.setStatus("PENDENTE");
         }
+
+        // Lógica para lidar com a listaMateriais
+        if (orcamento.getListaMateriais() != null && !orcamento.getListaMateriais().isEmpty()) {
+            List<Item> materiaisGerenciados = new ArrayList<>();
+            for (Item itemSubmetido : orcamento.getListaMateriais()) {
+                if (itemSubmetido.getId() != null) {
+                    Item itemDoBanco = itemRepository.findById(itemSubmetido.getId())
+                            .orElseThrow(() -> new NotFoundException("Item com ID " + itemSubmetido.getId() + " não encontrado. Não é possível adicionar ao orçamento."));
+                    materiaisGerenciados.add(itemDoBanco);
+                } else {
+                    // Tratar caso onde um item é enviado sem ID, se isso for um erro.
+                    // Ou, se você permitir criar novos itens via orçamento (mais complexo),
+                    // você precisaria salvar esse itemSubmetido primeiro.
+                    // Por ora, vamos assumir que os itens devem existir.
+                    throw new IllegalArgumentException("Item na lista de materiais está sem ID.");
+                }
+            }
+            orcamento.setListaMateriais(materiaisGerenciados); // Substitui a lista original pela lista de itens gerenciados
+        } else {
+            // Se a lista de materiais vier nula ou vazia, pode ser útil inicializá-la para evitar NullPointerExceptions depois
+            orcamento.setListaMateriais(new ArrayList<>());
+        }
+
         // Aqui você pode adicionar a lógica para calcular o valorTotal
         // com base na listaMateriais, se aplicável na criação.
         // Ex: orcamento.setValorTotal(calcularValorTotal(orcamento.getListaMateriais()));

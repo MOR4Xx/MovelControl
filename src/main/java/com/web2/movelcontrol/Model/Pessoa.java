@@ -10,9 +10,9 @@ public abstract class Pessoa {
     private Long id;
     @Column(nullable = false, length = 50)
     private String nome;
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String telefone;
-    @Column(nullable = false, length = 50)
+    @Column( length = 50)
     private String email;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

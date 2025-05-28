@@ -8,9 +8,9 @@ import jakarta.persistence.Table;
 @Table(name = "pessoa")
 public class PessoaFisica extends Pessoa {
 
-    @Column(name = "identificador", nullable = false, unique = true, length = 50)
+    @Column(name = "identificador", unique = true, length = 50)
     private String cpf;
-    @Column(name = "tipo", nullable = false, length = 10)
+    @Column(length = 10)
     private String tipo = "FISICA";
 
     public PessoaFisica() {
