@@ -1,17 +1,18 @@
 package com.web2.movelcontrol.Model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue; // Importar
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+// import jakarta.persistence.Table; // Remover Table
 
 @Entity
-@Table(name = "pessoa")
+@DiscriminatorValue("FISICA") // Define o valor para esta subclasse na coluna 'tipo'
 public class PessoaFisica extends Pessoa {
 
-    @Column(name = "identificador", unique = true, length = 50)
+    @Column(name = "identificador", unique = true, length = 50) // CPF será armazenado aqui
     private String cpf;
-    @Column(length = 10)
-    private String tipo = "FISICA";
+
+    // O campo 'tipo' foi removido, pois o @DiscriminatorValue cuida disso.
 
     public PessoaFisica() {
     }
@@ -27,13 +28,5 @@ public class PessoaFisica extends Pessoa {
 
     public void setCpf(String cpf) {
         this.cpf = cpf;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
     }
 }

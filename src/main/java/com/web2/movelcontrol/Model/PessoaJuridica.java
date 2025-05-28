@@ -1,16 +1,18 @@
 package com.web2.movelcontrol.Model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue; // Importar
+import jakarta.persistence.Entity;
+// import jakarta.persistence.Table; // Remover Table
 
 @Entity
-@Table(name = "pessoa")
+@DiscriminatorValue("JURIDICA") // Define o valor para esta subclasse na coluna 'tipo'
 public class PessoaJuridica extends Pessoa {
 
-    @Column(name = "identificador", unique = true, length = 50)
+    @Column(name = "identificador", unique = true, length = 50) // CNPJ será armazenado aqui
     private String cnpj;
 
-    @Column(length = 10)
-    private String tipo = "JURIDICA";
+    // O campo 'tipo' foi removido, pois o @DiscriminatorValue cuida disso.
 
     public PessoaJuridica() {}
 
@@ -25,13 +27,5 @@ public class PessoaJuridica extends Pessoa {
 
     public void setCnpj(String cnpj) {
         this.cnpj = cnpj;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
     }
 }
