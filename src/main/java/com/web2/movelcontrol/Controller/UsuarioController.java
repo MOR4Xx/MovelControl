@@ -95,7 +95,9 @@ public class UsuarioController {
     )
     @PutMapping(value = "/atualizar/{id}"
             , consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Usuario atualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
+    public Usuario atualizarUsuario(@PathVariable Long id, @RequestBody UsuarioRequestDTO usuarioDTO) {
+        Usuario usuario = DataMapper.parseObject(usuarioDTO, Usuario.class);
+
         return service.update(id, usuario);
     }
 
