@@ -28,6 +28,7 @@ public class OrcamentoItem {
         private Integer quantity;
 
         public OrcamentoItem() {
+            this.id = new OrcamentoItemKey();
         }
         public OrcamentoItem(Orcamento orcamento, Item item, Integer quantity) {
                 this.id = new OrcamentoItemKey(orcamento.getId(), item.getId());
