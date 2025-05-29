@@ -1,15 +1,12 @@
 package com.web2.movelcontrol.Service;
 
 import com.web2.movelcontrol.Model.Orcamento;
-import com.web2.movelcontrol.Model.OrcamentoItem; // Importar OrcamentoItem
+import com.web2.movelcontrol.Model.OrcamentoItem;
 import com.web2.movelcontrol.Model.Item;
-import com.web2.movelcontrol.Model.Pessoa; // Importar Pessoa (para o cliente)
+import com.web2.movelcontrol.Model.Pessoa;
 import com.web2.movelcontrol.Repository.OrcamentoRepository;
 import com.web2.movelcontrol.Repository.ItemRepository;
-import com.web2.movelcontrol.Repository.PessoaFisicaRepository; // Exemplo, ou um PessoaRepository genérico
-import com.web2.movelcontrol.Repository.PessoaJuridicaRepository; // Exemplo
-// Você pode precisar de um PessoaRepository se for buscar Pessoa de forma genérica
-// ou usar os repositórios específicos e verificar o tipo.
+import com.web2.movelcontrol.Repository.PessoaRepository;
 import com.web2.movelcontrol.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,21 +30,12 @@ public class OrcamentoService {
 
     @Autowired
     private ItemRepository itemRepository;
-
-    // Para buscar o cliente, você precisará de um repositório para Pessoa.
-    // Como Pessoa é @MappedSuperclass, você pode precisar de repositórios
-    // para as entidades concretas (PessoaFisica, PessoaJuridica) ou uma query customizada.
-    // Por simplicidade, vamos assumir que o objeto Pessoa cliente já viria populado com ID
-    // ou você teria uma lógica para buscá-lo aqui.
+    
     @Autowired
-    private PessoaFisicaRepository pessoaFisicaRepository; // Exemplo
-    @Autowired
-    private PessoaJuridicaRepository pessoaJuridicaRepository; // Exemplo
-
-
-    @Transactional // É uma boa prática ter transações em métodos que modificam dados
+    private PessoaRepository pessoaRepository;
+    
+    @Transactional
     public Orcamento criarOrcamento(Orcamento orcamentoInput) {
-        // 1. Preparar o objeto Orçamento principal
         Orcamento novoOrcamento = new Orcamento();
 
         if (orcamentoInput.getDataCriacao() == null) {
@@ -64,11 +52,7 @@ public class OrcamentoService {
 
         // 2. Associar o Cliente
         if (orcamentoInput.getCliente() != null && orcamentoInput.getCliente().getId() != null) {
-            // Aqui você precisaria buscar a Pessoa (Cliente) do banco de dados.
-            // A forma de buscar dependerá se você tem um PessoaRepository genérico
-            // ou precisa verificar o tipo e usar PessoaFisicaRepository/PessoaJuridicaRepository.
-            // Exemplo simplificado (assumindo que o ID é de PessoaFisica por ora):
-            Pessoa cliente = pessoaFisicaRepository.findById(orcamentoInput.getCliente().getId())
+            Pessoa cliente = pessoaRepository.findById(orcamentoInput.getCliente().getId()) // Use o PessoaRepository
                     .orElseThrow(() -> new NotFoundException("Cliente com ID " + orcamentoInput.getCliente().getId() + " não encontrado."));
             novoOrcamento.setCliente(cliente);
         } else {
@@ -162,17 +146,14 @@ public class OrcamentoService {
 
         // Atualiza Cliente
         if (orcamentoAtualizadoInput.getCliente() != null && orcamentoAtualizadoInput.getCliente().getId() != null) {
-            // Lógica similar à de criarOrcamento para buscar e setar o cliente
-            Pessoa cliente = pessoaFisicaRepository.findById(orcamentoAtualizadoInput.getCliente().getId()) // Exemplo
+            Pessoa cliente = pessoaRepository.findById(orcamentoAtualizadoInput.getCliente().getId())
                     .orElseThrow(() -> new NotFoundException("Cliente com ID " + orcamentoAtualizadoInput.getCliente().getId() + " não encontrado."));
             orcamentoExistente.setCliente(cliente);
         } else {
-            orcamentoExistente.setCliente(null); // Ou tratar conforme regra de negócio
+            orcamentoExistente.setCliente(null);
         }
 
         // Atualiza Itens do Orçamento
-        // Uma abordagem comum é limpar os itens existentes e adicionar os novos.
-        // `orphanRemoval=true` na entidade Orcamento cuidará de remover os antigos do banco.
         orcamentoExistente.getItensOrcamento().clear(); // Limpa a coleção existente
 
         if (orcamentoAtualizadoInput.getItensOrcamento() != null && !orcamentoAtualizadoInput.getItensOrcamento().isEmpty()) {
