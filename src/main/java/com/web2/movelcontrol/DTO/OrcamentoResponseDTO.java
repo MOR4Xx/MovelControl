@@ -21,17 +21,14 @@ public class OrcamentoResponseDTO {
 	private Double valorTotal;
 	
 	@Schema(description = "Dados do cliente associado ao orçamento")
-	private ClienteResponseDTO cliente; // Utilizará o ClienteResponseDTO com o exemplo já ajustado
+	private ClienteResponseDTO cliente;
 	
 	@Schema(description = "Lista de itens incluídos no orçamento")
-	private Set<ItemOrcamentoResponseDTO> itens; // Utilizará o ItemOrcamentoResponseDTO
+	private Set<ItemOrcamentoResponseDTO> itens; // Utilizará o ItemOrcamentoResponseDTO, antes era uma list
 	
-	// Construtor padrão
 	public OrcamentoResponseDTO() {
 	}
 	
-	// Getters e Setters (como definido anteriormente)
-	// ... (vou omiti-los aqui para brevidade, mas eles devem estar presentes)
 	public Long getId() { return id; }
 	public void setId(Long id) { this.id = id; }
 	public Date getDataCriacao() { return dataCriacao; }

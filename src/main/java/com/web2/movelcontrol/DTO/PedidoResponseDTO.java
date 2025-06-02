@@ -83,6 +83,6 @@ public class PedidoResponseDTO {
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, dataPedido, status, descricao, orcamentoId); // Adicionar orcamento se usar o objeto completo
+		return Objects.hash(id, dataPedido, status, descricao, orcamentoId);
 	}
 }

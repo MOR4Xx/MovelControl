@@ -93,13 +93,7 @@ public class OrcamentoController {
         return ResponseEntity.noContent().build();
     }
     
-    // --- Método auxiliar para mapear Entidade para DTO de Resposta ---
-    // PORQUÊ: Centraliza a lógica de mapeamento de Orcamento para OrcamentoResponseDTO.
-    //         Seu DataMapper é genérico, mas para preencher DTOs aninhados (ClienteResponseDTO, ItemOrcamentoResponseDTO)
-    //         de forma customizada, um método helper pode ser mais claro ou complementar ao ModelMapper
-    //         se o ModelMapper não estiver configurado para esses casos complexos.
-    //         Se o seu DataMapper já consegue lidar com isso, pode usá-lo diretamente.
-    //         ModelMapper pode ser configurado com TypeMaps para esses casos.
+    
     private OrcamentoResponseDTO mapToOrcamentoResponseDTO(Orcamento orcamento) {
         if (orcamento == null) {
             return null;

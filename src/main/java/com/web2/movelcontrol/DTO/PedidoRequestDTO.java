@@ -15,7 +15,7 @@ public class PedidoRequestDTO {
 	
 	@Schema(description = "Status do pedido", example = "AGUARDANDO_PAGAMENTO", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotBlank(message = "O status não pode ser vazio.")
-	@Size(max = 50, message = "O status deve ter no máximo 10 caracteres.") // Conforme entidade Pedido
+	@Size(max = 50, message = "O status deve ter no máximo 50 caracteres.") // Conforme entidade Pedido
 	private String status;
 	
 	@Schema(description = "Descrição adicional para o pedido", example = "Pedido urgente, cliente VIP.")
