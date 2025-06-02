@@ -34,11 +34,11 @@ public class PessoaFisicaController {
                     ),
                     @ApiResponse(responseCode = "400", description = "Requisição inválida devido a dados de entrada incorretos ou incompletos.",
                             content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponseDTO.class))
+                                    schema = @Schema(implementation = PessoaFisicaRequestDTO.class))
                     ),
                     @ApiResponse(responseCode = "409", description = "Conflito. A Pessoa Fisica com o CPF fornecido já existe.",
                             content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponseDTO.class))
+                                    schema = @Schema(implementation = PessoaFisicaRequestDTO.class))
                     ),
                     @ApiResponse(responseCode = "500", description = "Erro interno do servidor.",
                             content = @Content(mediaType = "application/json",

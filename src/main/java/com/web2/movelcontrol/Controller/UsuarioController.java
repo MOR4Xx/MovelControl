@@ -1,8 +1,10 @@
 package com.web2.movelcontrol.Controller;
 
 import com.web2.movelcontrol.DTO.DataMapper;
+import com.web2.movelcontrol.DTO.PessoaJuridicaRequestDTO;
 import com.web2.movelcontrol.DTO.UsuarioRequestDTO;
 import com.web2.movelcontrol.DTO.UsuarioResponseDTO;
+import com.web2.movelcontrol.Exceptions.ErrorResponseDTO;
 import com.web2.movelcontrol.Model.Usuario;
 import com.web2.movelcontrol.Service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +35,10 @@ public class UsuarioController {
                     @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = UsuarioResponseDTO.class))),
-                    @ApiResponse(responseCode = "400", description = "Dados inválidos")
+                    @ApiResponse(responseCode = "400", description = "Requisição inválida devido a dados de entrada incorretos ou incompletos.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = UsuarioRequestDTO.class))
+                    )
             }
     )
     @PostMapping(value = "/criar",
@@ -58,7 +63,11 @@ public class UsuarioController {
                     @ApiResponse(responseCode = "200", description = "Usuário encontrado",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = UsuarioResponseDTO.class))),
-                    @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+                    @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class))
+                    )
             }
     )
     @GetMapping("/{id}")
@@ -74,7 +83,11 @@ public class UsuarioController {
                     @ApiResponse(responseCode = "200", description = "Usuário encontrado",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = UsuarioResponseDTO.class))),
-                    @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+                    @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class))
+                    )
             }
     )
     @GetMapping("/nome/{nome}")
