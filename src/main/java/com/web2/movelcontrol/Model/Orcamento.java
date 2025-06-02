@@ -27,17 +27,22 @@ public class Orcamento {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cliente_id") // Esta será a coluna de chave estrangeira na tabela 'orcamento'
+    @JoinColumn(name = "cliente_id") //coluna de chave estrangeira na tabela 'orcamento'
     private Pessoa cliente;
 
     public Orcamento() {
+        
+        this.dataCriacao = new Date();
+        this.status = "PENDENTE";
+        this.itensOrcamento = new HashSet<>(); // Garante que a coleção seja inicializada
+        this.valorTotal = 0.0;
     }
 
     public Orcamento(Date dataCriacao, String status, Pessoa cliente) {
         this.dataCriacao = dataCriacao;
         this.status = status;
         this.cliente = cliente;
-        this.valorTotal = 0.0; // Inicializa com 0, será calculado
+        this.valorTotal = 0.0;
     }
 
     public Long getId() {

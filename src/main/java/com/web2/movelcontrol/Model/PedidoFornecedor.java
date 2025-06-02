@@ -25,9 +25,9 @@ public class PedidoFornecedor {
     @JoinColumn(name = "fornecedor_id")
     private Fornecedor fornecedor;
 
-    @ManyToMany
-    @JoinTable(name = "pedido_item", joinColumns = @JoinColumn(name = "pedido_id"), inverseJoinColumns = @JoinColumn(name = "item_id"))
-    private List<Item> itens_pedido = new ArrayList<>();
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ItemPedidoFornecedor> itens_pedido = new ArrayList<>();
+
 
     public Fornecedor getFornecedor() {
         return fornecedor;
@@ -71,12 +71,12 @@ public class PedidoFornecedor {
         this.status = status;
     }
 
-    public List<Item> getItens_pedido() {
-        return itens_pedido;
-    }
+    public List<ItemPedidoFornecedor> getItens_pedido() {
+    return itens_pedido;
+}
 
-    public void setItens_pedido(List<Item> itens_pedido) {
-        this.itens_pedido = itens_pedido;
-    }
+public void setItens_pedido(List<ItemPedidoFornecedor> itens_pedido) {
+    this.itens_pedido = itens_pedido;
+}
 
 }

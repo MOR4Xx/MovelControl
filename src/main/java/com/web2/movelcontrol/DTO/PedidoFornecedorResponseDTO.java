@@ -8,9 +8,9 @@ public class PedidoFornecedorResponseDTO {
     private String status;
     private Date dataPedido;
     private String nomeFornecedor;
-    private List<ItemDTO> itens;
+    private List<ItemPedidoFornecedorResponseDTO> itens;
 
-    public PedidoFornecedorResponseDTO(Long id, String status, Date dataPedido, String nomeFornecedor, List<ItemDTO> itens) {
+    public PedidoFornecedorResponseDTO(Long id, String status, Date dataPedido, String nomeFornecedor, List<ItemPedidoFornecedorResponseDTO> itens) {
         this.id = id;
         this.status = status;
         this.dataPedido = dataPedido;
@@ -50,11 +50,11 @@ public class PedidoFornecedorResponseDTO {
         this.nomeFornecedor = nomeFornecedor;
     }
 
-    public List<ItemDTO> getItens() {
+    public List<ItemPedidoFornecedorResponseDTO> getItens() {
         return itens;
     }
 
-    public void setItens(List<ItemDTO> itens) {
+    public void setItens(List<ItemPedidoFornecedorResponseDTO> itens) {
         this.itens = itens;
     }
 

@@ -1,115 +1,155 @@
 package com.web2.movelcontrol.Service;
 
-import com.web2.movelcontrol.DTO.ItemDTO;
-import com.web2.movelcontrol.DTO.PedidoFornecedorResponseDTO;
-import com.web2.movelcontrol.Model.Fornecedor;
-import com.web2.movelcontrol.Model.Item;
-import com.web2.movelcontrol.Model.PedidoFornecedor;
-import com.web2.movelcontrol.Repository.ItemRepository;
-import com.web2.movelcontrol.Repository.PedidoFornecedorRepository;
+import com.web2.movelcontrol.DTO.*;
+import com.web2.movelcontrol.Model.*;
+import com.web2.movelcontrol.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.web2.movelcontrol.Repository.FornecedorRepository;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
 public class PedidoFornecedorService {
 
-    @Autowired
-    private PedidoFornecedorRepository pedidoRepository;
+        @Autowired
+        private PedidoFornecedorRepository pedidoRepository;
 
-    @Autowired
-    private ItemRepository itemRepository;
+        @Autowired
+        private ItemRepository itemRepository;
 
-    @Autowired
-    private FornecedorRepository fornecedorRepository;
+        @Autowired
+        private FornecedorRepository fornecedorRepository;
 
-    public PedidoFornecedor create(PedidoFornecedor pedido) {
-        List<Item> itensCompletos = new ArrayList<>();
+        @Autowired
+        private ItemPedidoFornecedorRepository itemPedidoFornecedorRepository;
 
-        for (Item itemParcial : pedido.getItens_pedido()) {
-            Item itemCompleto = itemRepository.findById(itemParcial.getId())
-                    .orElseThrow(() -> new RuntimeException("Item com ID " + itemParcial.getId() + " não encontrado."));
-            itensCompletos.add(itemCompleto);
+        public PedidoFornecedor create(PedidoFornecedorRequestDTO dto) {
+                PedidoFornecedor pedido = new PedidoFornecedor();
+                pedido.setDataPedido(dto.getDataPedido() != null ? dto.getDataPedido() : new Date());
+                pedido.setStatus(dto.getStatus());
+
+                Fornecedor fornecedor = fornecedorRepository.findById(dto.getFornecedorId())
+                                .orElseThrow(() -> new RuntimeException("Fornecedor não encontrado."));
+                pedido.setFornecedor(fornecedor);
+
+                List<ItemPedidoFornecedor> itensPedido = new ArrayList<>();
+
+                for (ItemPedidoFornecedorRequestDTO itemDTO : dto.getItens()) {
+                        Item item = itemRepository.findById(itemDTO.getItemId())
+                                        .orElseThrow(() -> new RuntimeException(
+                                                        "Item com ID " + itemDTO.getItemId() + " não encontrado."));
+
+                        ItemPedidoFornecedor ipf = new ItemPedidoFornecedor();
+                        ipf.setItem(item);
+                        ipf.setPedido(pedido);
+                        ipf.setQuantidade(itemDTO.getQuantidade());
+
+                        itensPedido.add(ipf);
+                }
+
+                pedido.setItens_pedido(itensPedido);
+                return pedidoRepository.save(pedido);
         }
 
-        pedido.setItens_pedido(itensCompletos);
-        return pedidoRepository.save(pedido);
-    }
+        public PedidoFornecedor update(Long id, PedidoFornecedorRequestDTO dto) {
+                PedidoFornecedor existing = pedidoRepository.findById(id)
+                                .orElseThrow(() -> new RuntimeException(
+                                                "PedidoFornecedor com ID " + id + " não encontrado."));
 
-    public PedidoFornecedor update(Long id, PedidoFornecedor updatedPedido) {
-        PedidoFornecedor existing = pedidoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("PedidoFornecedor com ID " + id + " não encontrado."));
+                existing.setDataPedido(dto.getDataPedido());
+                existing.setStatus(dto.getStatus());
 
-        existing.setDataPedido(updatedPedido.getDataPedido());
-        existing.setStatus(updatedPedido.getStatus());
+                if (dto.getFornecedorId() != null) {
+                        Fornecedor fornecedor = fornecedorRepository.findById(dto.getFornecedorId())
+                                        .orElseThrow(() -> new RuntimeException("Fornecedor não encontrado."));
+                        existing.setFornecedor(fornecedor);
+                }
 
-        if (updatedPedido.getFornecedor() != null) {
-            Fornecedor fornecedor = fornecedorRepository.findById(updatedPedido.getFornecedor().getId())
-                    .orElseThrow(() -> new RuntimeException("Fornecedor não encontrado."));
-            existing.setFornecedor(fornecedor);
+                // Remove os antigos e insere os novos
+                existing.getItens_pedido().clear();
+
+                List<ItemPedidoFornecedor> novosItens = new ArrayList<>();
+                for (ItemPedidoFornecedorRequestDTO itemDTO : dto.getItens()) {
+                        Item item = itemRepository.findById(itemDTO.getItemId())
+                                        .orElseThrow(() -> new RuntimeException(
+                                                        "Item com ID " + itemDTO.getItemId() + " não encontrado."));
+
+                        ItemPedidoFornecedor ipf = new ItemPedidoFornecedor();
+
+                        ItemPedidoFornecedorId compositeId = new ItemPedidoFornecedorId(); // renomeado
+                        compositeId.setPedidoId(existing.getId());
+                        compositeId.setItemId(item.getId());
+
+                        ipf.setId(compositeId);
+                        ipf.setItem(item);
+                        ipf.setPedido(existing);
+                        ipf.setQuantidade(itemDTO.getQuantidade());
+
+                        novosItens.add(ipf);
+                }
+
+                existing.getItens_pedido().clear();
+                existing.getItens_pedido().addAll(novosItens);
+
+                return pedidoRepository.save(existing);
         }
 
-        if (updatedPedido.getItens_pedido() != null) {
-            List<Item> itens = new ArrayList<>();
-            for (Item item : updatedPedido.getItens_pedido()) {
-                Item found = itemRepository.findById(item.getId())
-                        .orElseThrow(() -> new RuntimeException("Item com ID " + item.getId() + " não encontrado."));
-                itens.add(found);
-            }
-            existing.setItens_pedido(itens);
+        public void delete(Long id) {
+                PedidoFornecedor pedido = pedidoRepository.findById(id)
+                                .orElseThrow(() -> new RuntimeException(
+                                                "PedidoFornecedor com ID " + id + " não encontrado."));
+
+                pedido.getItens_pedido().clear();
+                pedidoRepository.save(pedido);
+                pedidoRepository.deleteById(id);
         }
 
-        return pedidoRepository.save(existing);
-    }
+        public List<PedidoFornecedorResponseDTO> findAll() {
+                List<PedidoFornecedor> pedidos = pedidoRepository.findAll();
 
-    public void delete(Long id) {
-        PedidoFornecedor pedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("PedidoFornecedor com ID " + id + " não encontrado."));
+                return pedidos.stream().map(pedido -> {
+                        String nomeFornecedor = pedido.getFornecedor() != null ? pedido.getFornecedor().getNome()
+                                        : null;
 
-        // Remove os vínculos com itens antes de deletar
-        pedido.getItens_pedido().clear();
-        pedidoRepository.save(pedido); // Salva o estado desvinculado
+                        List<ItemPedidoFornecedorResponseDTO> itens = pedido.getItens_pedido().stream()
+                                        .map(ipf -> new ItemPedidoFornecedorResponseDTO(
+                                                        ipf.getItem().getId(),
+                                                        ipf.getItem().getNome(),
+                                                        ipf.getItem().getDescricao(),
+                                                        ipf.getQuantidade()))
+                                        .toList();
 
-        // Agora pode remover o pedido com segurança
-        pedidoRepository.deleteById(id);
-    }
+                        return new PedidoFornecedorResponseDTO(
+                                        pedido.getId(),
+                                        pedido.getStatus(),
+                                        pedido.getDataPedido(),
+                                        nomeFornecedor,
+                                        itens);
+                }).toList();
+        }
 
-    public List<PedidoFornecedorResponseDTO> findAll() {
-        List<PedidoFornecedor> pedidos = pedidoRepository.findAll();
+        public PedidoFornecedorResponseDTO findById(Long id) {
+                PedidoFornecedor pedido = pedidoRepository.findById(id)
+                                .orElseThrow(() -> new RuntimeException(
+                                                "PedidoFornecedor com ID " + id + " não encontrado."));
 
-        return pedidos.stream().map(pedido -> {
-            String nomeFornecedor = pedido.getFornecedor() != null ? pedido.getFornecedor().getNome() : null;
+                String nomeFornecedor = pedido.getFornecedor() != null ? pedido.getFornecedor().getNome() : null;
 
-            List<ItemDTO> itens = pedido.getItens_pedido().stream()
-                    .map(item -> new ItemDTO(item.getId(), item.getNome(), item.getDescricao())).toList();
+                List<ItemPedidoFornecedorResponseDTO> itens = pedido.getItens_pedido().stream()
+                                .map(ipf -> new ItemPedidoFornecedorResponseDTO(
+                                                ipf.getItem().getId(),
+                                                ipf.getItem().getNome(),
+                                                ipf.getItem().getDescricao(),
+                                                ipf.getQuantidade()))
+                                .toList();
 
-            return new PedidoFornecedorResponseDTO(
-                    pedido.getId(),
-                    pedido.getStatus(),
-                    pedido.getDataPedido(),
-                    nomeFornecedor,
-                    itens);
-        }).toList();
-    }
-
-    public PedidoFornecedorResponseDTO findById(Long id) {
-        PedidoFornecedor pedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("PedidoFornecedor com ID " + id + " não encontrado."));
-
-        String nomeFornecedor = pedido.getFornecedor() != null ? pedido.getFornecedor().getNome() : null;
-
-        List<ItemDTO> itens = pedido.getItens_pedido().stream()
-                .map(item -> new ItemDTO(item.getId(), item.getNome(), item.getDescricao())).toList();
-
-        return new PedidoFornecedorResponseDTO(
-                pedido.getId(),
-                pedido.getStatus(),
-                pedido.getDataPedido(),
-                nomeFornecedor,
-                itens);
-    }
-
+                return new PedidoFornecedorResponseDTO(
+                                pedido.getId(),
+                                pedido.getStatus(),
+                                pedido.getDataPedido(),
+                                nomeFornecedor,
+                                itens);
+        }
 }
