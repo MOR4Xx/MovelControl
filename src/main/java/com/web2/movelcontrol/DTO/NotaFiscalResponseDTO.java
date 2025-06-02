@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.Objects;
 
 @Schema(name = "NotaFIscalResponseDTO", description = "Dados de saída de uma nota fiscal retornados pela API")
-public class NotaFIscalResponseDTO {
+public class NotaFiscalResponseDTO {
 
     @Schema(description = "Codido da Nota Fiscal", example = "N°000.000.000")
     private String codigo;
@@ -17,7 +17,7 @@ public class NotaFIscalResponseDTO {
     @Schema(description = "Valor da Nota Fiscal", example = "100.00")
     private Double valor;
 
-    public NotaFIscalResponseDTO() {
+    public NotaFiscalResponseDTO() {
     }
 
     public String getCodigo() {
@@ -55,7 +55,7 @@ public class NotaFIscalResponseDTO {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        NotaFIscalResponseDTO that = (NotaFIscalResponseDTO) o;
+        NotaFiscalResponseDTO that = (NotaFiscalResponseDTO) o;
         return Objects.equals(codigo, that.codigo) && Objects.equals(dataEmissao, that.dataEmissao) && Objects.equals(idPedido, that.idPedido) && Objects.equals(valor, that.valor);
     }
 

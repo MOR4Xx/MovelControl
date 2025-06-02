@@ -1,3 +1,8 @@
+/*
+ * Autor: Jorge Afonso
+ * Responsavel: Jorge Afonso
+ */
+
 package com.web2.movelcontrol.DTO;
 
 import io.swagger.v3.oas.annotations.media.Schema;

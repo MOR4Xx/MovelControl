@@ -1,7 +1,11 @@
+/*
+* Autor: Jorge Afonso
+* Responsavel: Jorge Afonso
+*/
+
 package com.web2.movelcontrol.Controller;
 
 import com.web2.movelcontrol.DTO.DataMapper;
-import com.web2.movelcontrol.DTO.PessoaJuridicaRequestDTO;
 import com.web2.movelcontrol.DTO.UsuarioRequestDTO;
 import com.web2.movelcontrol.DTO.UsuarioResponseDTO;
 import com.web2.movelcontrol.Exceptions.ErrorResponseDTO;

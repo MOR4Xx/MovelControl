@@ -1,3 +1,8 @@
+/*
+ * Autor: Jorge Afonso
+ * Responsavel: Jorge Afonso
+ */
+
 package com.web2.movelcontrol.Model;
 
 import jakarta.persistence.Column;
