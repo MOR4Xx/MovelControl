@@ -1,5 +1,6 @@
 package com.web2.movelcontrol.Controller;
 
+import com.web2.movelcontrol.DTO.OrcamentoResponseDTO;
 import com.web2.movelcontrol.DTO.PedidoRequestDTO;
 import com.web2.movelcontrol.DTO.PedidoResponseDTO;
 import com.web2.movelcontrol.DTO.DataMapper;
@@ -20,42 +21,74 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/pedidos")
-@Tag(name = "Pedidos", description = "Operações relacionadas a Pedidos de Clientes")
+@Tag(name = "Pedidos", description = "Endpoints para gerenciar Pedidos")
 public class PedidoController {
     
     @Autowired
     private PedidoService pedidoService;
     
-    @Operation(summary = "Cria um novo pedido", responses = {
-            @ApiResponse(responseCode = "201", description = "Pedido criado com sucesso",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PedidoResponseDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Dados de requisição inválidos"),
-            @ApiResponse(responseCode = "404", description = "Orçamento não encontrado")
-    })
+    
     @PostMapping
+    @Operation(summary = "Cria um novo pedido",
+            description = "Este endpoint permite a criação de um novo pedido.",
+            tags = {"Pedidos"},
+            responses = {
+                    @ApiResponse(description = "Pedido Criado com Sucesso", responseCode = "201",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = PedidoResponseDTO.class) // Usando a entidade Pedido diretamente
+                            )
+                    ),
+                    @ApiResponse(description = "Requisição Inválida (ex: orçamento não informado ou inválido)", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Não Autorizado", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Recurso Não Encontrado (ex: Orçamento associado não existe)", responseCode = "404", content = @Content),
+                    @ApiResponse(description = "Erro Interno do Servidor", responseCode = "500", content = @Content)
+            }
+    )
     public ResponseEntity<PedidoResponseDTO> criarPedido(@RequestBody @Valid PedidoRequestDTO pedidoDTO) {
         Pedido pedidoSalvo = pedidoService.criarPedido(pedidoDTO);
         PedidoResponseDTO responseDTO = mapToPedidoResponseDTO(pedidoSalvo);
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
     
-    @Operation(summary = "Busca um pedido por ID", responses = {
-            @ApiResponse(responseCode = "200", description = "Pedido encontrado",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PedidoResponseDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Pedido não encontrado")
-    })
+    
     @GetMapping("/{id}")
+    @Operation(summary = "Busca um pedido por ID",
+            description = "Retorna os detalhes de um pedido específico com base no seu ID.",
+            tags = {"Pedidos"},
+            responses = {
+                    @ApiResponse(description = "Pedido Encontrado", responseCode = "200",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = PedidoResponseDTO.class)
+                            )
+                    ),
+                    @ApiResponse(description = "Pedido Não Encontrado", responseCode = "404", content = @Content),
+                    @ApiResponse(description = "Requisição Inválida", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Não Autorizado", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Erro Interno do Servidor", responseCode = "500", content = @Content)
+            }
+    )
     public ResponseEntity<PedidoResponseDTO> buscarPedidoPorId(@PathVariable Long id) {
         Pedido pedido = pedidoService.buscarPedidoPorId(id);
         PedidoResponseDTO responseDTO = mapToPedidoResponseDTO(pedido);
         return ResponseEntity.ok(responseDTO);
     }
     
-    @Operation(summary = "Lista todos os pedidos", responses = {
-            @ApiResponse(responseCode = "200", description = "Lista de pedidos",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PedidoResponseDTO.class)))
-    })
+    
     @GetMapping
+    @Operation(summary = "Lista todos os pedidos",
+            description = "Retorna uma lista de todos os pedidos cadastrados no sistema.",
+            tags = {"Pedidos"},
+            responses = {
+                    @ApiResponse(description = "Lista de Pedidos Obtida com Sucesso", responseCode = "200",
+                            content = @Content(mediaType = "application/json",
+                                    // Como é uma lista, usamos arraySchema
+                                    array = @io.swagger.v3.oas.annotations.media.ArraySchema(schema = @Schema(implementation = PedidoResponseDTO.class))
+                            )
+                    ),
+                    @ApiResponse(description = "Não Autorizado", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Erro Interno do Servidor", responseCode = "500", content = @Content)
+            }
+    )
     public ResponseEntity<List<PedidoResponseDTO>> listarTodosPedidos() {
         List<Pedido> pedidos = pedidoService.listarTodosPedidos();
         List<PedidoResponseDTO> responseDTOs = pedidos.stream()
@@ -64,25 +97,42 @@ public class PedidoController {
         return ResponseEntity.ok(responseDTOs);
     }
     
-    @Operation(summary = "Atualiza um pedido existente", responses = {
-            @ApiResponse(responseCode = "200", description = "Pedido atualizado com sucesso",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PedidoResponseDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Dados de requisição inválidos"),
-            @ApiResponse(responseCode = "404", description = "Pedido não encontrado")
-    })
+  
     @PutMapping("/{id}")
+    @Operation(summary = "Atualiza um pedido existente",
+            description = "Permite a atualização dos dados de um pedido existente (ex: status, descrição), identificado pelo seu ID.",
+            tags = {"Pedidos"},
+            responses = {
+                    @ApiResponse(description = "Pedido Atualizado com Sucesso", responseCode = "200",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = PedidoResponseDTO.class)
+                            )
+                    ),
+                    @ApiResponse(description = "Requisição Inválida (dados do pedido)", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Não Autorizado", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Pedido Não Encontrado", responseCode = "404", content = @Content),
+                    @ApiResponse(description = "Erro Interno do Servidor", responseCode = "500", content = @Content)
+            }
+    )
     public ResponseEntity<PedidoResponseDTO> atualizarPedido(@PathVariable Long id, @RequestBody @Valid PedidoRequestDTO pedidoDTO) {
         Pedido pedidoAtualizado = pedidoService.atualizarPedido(id, pedidoDTO);
         PedidoResponseDTO responseDTO = mapToPedidoResponseDTO(pedidoAtualizado);
         return ResponseEntity.ok(responseDTO);
     }
     
-    @Operation(summary = "Deleta um pedido por ID", responses = {
-            @ApiResponse(responseCode = "204", description = "Pedido deletado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Pedido não encontrado"),
-            @ApiResponse(responseCode = "409", description = "Conflito - Pedido possui nota fiscal vinculada")
-    })
+   
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deleta um pedido por ID",
+            description = "Remove um pedido do sistema com base no seu ID.",
+            tags = {"Pedidos"},
+            responses = {
+                    @ApiResponse(description = "Pedido Deletado com Sucesso", responseCode = "204", content = @Content),
+                    @ApiResponse(description = "Requisição Inválida", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Não Autorizado", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Pedido Não Encontrado", responseCode = "404", content = @Content),
+                    @ApiResponse(description = "Erro Interno do Servidor", responseCode = "500", content = @Content)
+            }
+    )
     public ResponseEntity<Void> deletarPedido(@PathVariable Long id) {
         pedidoService.deletarPedido(id);
         return ResponseEntity.noContent().build();

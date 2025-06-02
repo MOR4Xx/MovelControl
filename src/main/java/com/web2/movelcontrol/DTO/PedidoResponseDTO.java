@@ -7,7 +7,7 @@ import java.util.Objects;
 @Schema(name = "PedidoResponseDTO", description = "DTO para representar um Pedido na resposta da API")
 public class PedidoResponseDTO {
 	
-	@Schema(description = "ID do Pedido", example = "77")
+	@Schema(description = "ID do Pedido", example = "1")
 	private Long id;
 	
 	@Schema(description = "Data do pedido", example = "2025-08-03T00:00:00.000+00:00")
@@ -16,11 +16,11 @@ public class PedidoResponseDTO {
 	@Schema(description = "Status atual do pedido", example = "EM_PROCESSAMENTO")
 	private String status;
 	
-	@Schema(description = "Descrição do pedido", example = "Pedido referente ao orçamento de ID 6")
+	@Schema(description = "Descrição do pedido", example = "Pedido referente ao orçamento de ID 1")
 	private String descricao;
 	
 	
-	@Schema(description = "ID do Orçamento vinculado", example = "6")
+	@Schema(description = "ID do Orçamento vinculado", example = "1")
 	private Long orcamentoId;
 	
 	

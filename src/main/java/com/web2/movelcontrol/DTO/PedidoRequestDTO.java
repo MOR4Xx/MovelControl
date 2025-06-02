@@ -22,7 +22,7 @@ public class PedidoRequestDTO {
 	@Size(max = 100, message = "A descrição deve ter no máximo 100 caracteres.") // Conforme entidade Pedido
 	private String descricao;
 	
-	@Schema(description = "ID do Orçamento vinculado a este pedido.", example = "6", requiredMode = Schema.RequiredMode.REQUIRED)
+	@Schema(description = "ID do Orçamento vinculado a este pedido.", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull(message = "O ID do orçamento não pode ser nulo.")
 	private Long orcamentoId;
 	

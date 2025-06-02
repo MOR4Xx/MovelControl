@@ -2,6 +2,7 @@ package com.web2.movelcontrol.DTO;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.util.Date;
@@ -15,7 +16,8 @@ public class OrcamentoRequestDTO {
 	@Schema(description = "Data de criação do orçamento. Se não fornecida, será a data atual.", example = "2025-05-29")
 	private Date dataCriacao;
 	
-	@Schema(description = "Status do orçamento", example = "PENDENTE_APROVACAO")
+	@Schema(description = "Status do orçamento", example = "EM_ANDAMENTO")
+	@NotBlank(message = "O status não pode ser vazio.")
 	private String status;
 	
 	@Schema(description = "ID do cliente associado ao orçamento.", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)

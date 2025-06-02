@@ -8,10 +8,10 @@ import java.util.Objects;
 @Schema(name = "OrcamentoResponseDTO", description = "DTO para representar um orçamento na resposta da API")
 public class OrcamentoResponseDTO {
 	
-	@Schema(description = "ID do orçamento", example = "101")
+	@Schema(description = "ID do orçamento", example = "1")
 	private Long id;
 	
-	@Schema(description = "Data de criação do orçamento", example = "2025-05-29T10:30:00.000Z")
+	@Schema(description = "Data de criação do orçamento", example = "2025-05-29")
 	private Date dataCriacao;
 	
 	@Schema(description = "Status atual do orçamento", example = "APROVADO")
