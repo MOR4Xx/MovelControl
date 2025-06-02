@@ -11,11 +11,11 @@ import java.util.Objects;
 public class PedidoRequestDTO {
 	
 	@Schema(description = "Data do pedido. Se não fornecida, o serviço pode definir a data atual.", example = "2025-08-03")
-	private Date dataPedido; // No seu Pedido.java, o campo é data_pedido
+	private Date dataPedido; // No model de Pedido o campo é data_pedido
 	
 	@Schema(description = "Status do pedido", example = "AGUARDANDO_PAGAMENTO", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotBlank(message = "O status não pode ser vazio.")
-	@Size(max = 10, message = "O status deve ter no máximo 10 caracteres.") // Conforme entidade Pedido
+	@Size(max = 50, message = "O status deve ter no máximo 10 caracteres.") // Conforme entidade Pedido
 	private String status;
 	
 	@Schema(description = "Descrição adicional para o pedido", example = "Pedido urgente, cliente VIP.")

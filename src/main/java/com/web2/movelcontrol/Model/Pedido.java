@@ -16,7 +16,7 @@ public class Pedido {
     @Column(name = "data_pedido", nullable = false)
     private Date data_pedido;
 
-    @Column(name ="status", nullable = false, length = 10)
+    @Column(name ="status", nullable = false, length = 50)
     private String status;
 
     @Column(name = "descricao", length = 100)

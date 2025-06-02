@@ -11,7 +11,7 @@ public class PedidoResponseDTO {
 	private Long id;
 	
 	@Schema(description = "Data do pedido", example = "2025-08-03T00:00:00.000+00:00")
-	private Date dataPedido; // No seu Pedido.java, o campo é data_pedido
+	private Date dataPedido; // No model de Pedido o campo é data_pedido
 	
 	@Schema(description = "Status atual do pedido", example = "EM_PROCESSAMENTO")
 	private String status;
