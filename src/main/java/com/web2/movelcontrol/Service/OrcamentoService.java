@@ -42,33 +42,23 @@ public class OrcamentoService {
     public Orcamento criarOrcamento(OrcamentoRequestDTO orcamentoDTO) {
         Orcamento novoOrcamento = new Orcamento();
         
-        if (orcamentoDTO.getDataCriacao() == null) {
-            novoOrcamento.setDataCriacao(new Date());
-        } else {
+        if (orcamentoDTO.getDataCriacao() != null) {
             novoOrcamento.setDataCriacao(orcamentoDTO.getDataCriacao());
         }
         
-        if (orcamentoDTO.getStatus() == null || orcamentoDTO.getStatus().isEmpty()) {
-            novoOrcamento.setStatus("PENDENTE");
-        } else {
+        // Se vier algo no DTO, ele será usado sobrescrevendo o construtor.
+        if (orcamentoDTO.getStatus() != null && !orcamentoDTO.getStatus().isEmpty()) {
             novoOrcamento.setStatus(orcamentoDTO.getStatus());
         }
         
-        // Associar o Cliente usando clienteId do DTO
-        if (orcamentoDTO.getClienteId() != null) {
-            Pessoa cliente = pessoaRepository.findById(orcamentoDTO.getClienteId())
-                    .orElseThrow(() -> new NotFoundException("Cliente com ID " + orcamentoDTO.getClienteId() + " não encontrado."));
-            novoOrcamento.setCliente(cliente);
-        } else {
-            
-            throw new IllegalArgumentException("ID do Cliente é obrigatório para criar um orçamento.");
-        }
+        //DTO já confere se cliente é nulo
+        Pessoa cliente = pessoaRepository.findById(orcamentoDTO.getClienteId())
+                .orElseThrow(() -> new NotFoundException("Cliente com ID " + orcamentoDTO.getClienteId() + " não encontrado."));
+        novoOrcamento.setCliente(cliente);
         
-        // Processar e adicionar os itens ao orçamento a partir do DTO
         Set<OrcamentoItem> itensProcessados = new HashSet<>();
         if (orcamentoDTO.getItens() != null && !orcamentoDTO.getItens().isEmpty()) {
             for (ItemOrcamentoRequestDTO itemDto : orcamentoDTO.getItens()) {
-                // Validações de itemId e quantity já devem ter sido feitas pelo @Valid no controller
                 Item itemDoBanco = itemRepository.findById(itemDto.getItemId())
                         .orElseThrow(() -> new NotFoundException("Item com ID " + itemDto.getItemId() + " não encontrado."));
                 
@@ -81,10 +71,8 @@ public class OrcamentoService {
         }
         novoOrcamento.setItensOrcamento(itensProcessados);
         
-        // Calcular o valor total
         novoOrcamento.calcularValorTotalOrcamento();
-        
-        logger.info("Criando um novo orçamento a partir de DTO.");
+        logger.info("Criando um novo orçamento a partir de DTO, com padrões da entidade.");
         return orcamentoRepository.save(novoOrcamento);
     }
     
@@ -100,12 +88,12 @@ public class OrcamentoService {
     }
     
     @Transactional
-    public Orcamento atualizarOrcamento(Long id, OrcamentoRequestDTO requestDTO) { // Note que o nome do parâmetro é requestDTO aqui
+    public Orcamento atualizarOrcamento(Long id, OrcamentoRequestDTO requestDTO) { // o nome do parâmetro é requestDTO aqui
         logger.info("Atualizando orçamento com ID: " + id + " usando lógica de sincronização de itens.");
         Orcamento orcamentoExistente = orcamentoRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Orçamento com ID " + id + " não encontrado, não foi possível atualizar."));
         
-        // 1. Atualiza campos simples do Orçamento
+        // Atualiza campos simples do Orçamento
         if (requestDTO.getDataCriacao() != null) {
             orcamentoExistente.setDataCriacao(requestDTO.getDataCriacao());
         }
@@ -121,10 +109,10 @@ public class OrcamentoService {
                 orcamentoExistente.setCliente(cliente);
             }
         } else {
-            orcamentoExistente.setCliente(null); // Ou sua lógica de negócio se cliente não puder ser nulo
+            orcamentoExistente.setCliente(null);
         }
         
-        // 2. Mapeia os OrcamentoItems existentes pelo ID do Item para fácil acesso
+        // Mapeia os OrcamentoItems existentes pelo ID do Item para fácil acesso
         Map<Long, OrcamentoItem> itensExistentesNoMapa = new HashSet<>(orcamentoExistente.getItensOrcamento()) // Crie uma cópia para evitar ConcurrentModificationException ao modificar a original
                 .stream()
                 .collect(Collectors.toMap(

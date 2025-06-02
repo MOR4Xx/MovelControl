@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/pedidos") // Define o path base para este controlador
+@RequestMapping("/pedido") // Define o path base para este controlador
 public class PedidoController {
 
     @Autowired
@@ -23,7 +23,6 @@ public class PedidoController {
     }
 
     // Endpoint para CRIAR um novo pedido
-    // HTTP POST para /pedidos
     @PostMapping
     public ResponseEntity<Pedido> criarPedido(@RequestBody Pedido pedido) {
         Pedido novoPedido = pedidoService.criarPedido(pedido);
