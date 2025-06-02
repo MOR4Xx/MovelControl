@@ -14,6 +14,7 @@ public class ItemPedidoFornecedor {
     @JoinColumn(name = "pedido_id")
     private PedidoFornecedor pedido;
 
+    
     @ManyToOne
     @MapsId("itemId")
     @JoinColumn(name = "item_id")

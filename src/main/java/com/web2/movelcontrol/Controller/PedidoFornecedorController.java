@@ -4,6 +4,9 @@ import com.web2.movelcontrol.DTO.PedidoFornecedorRequestDTO;
 import com.web2.movelcontrol.DTO.PedidoFornecedorResponseDTO;
 import com.web2.movelcontrol.Model.PedidoFornecedor;
 import com.web2.movelcontrol.Service.PedidoFornecedorService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,14 +22,14 @@ public class PedidoFornecedorController {
     private PedidoFornecedorService service;
 
     @PostMapping(value = "/criar", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PedidoFornecedor> criarPedidoFornecedor(@RequestBody PedidoFornecedorRequestDTO dto) {
+    public ResponseEntity<PedidoFornecedor> criarPedidoFornecedor(@Valid @RequestBody PedidoFornecedorRequestDTO dto) {
         PedidoFornecedor novoPedido = service.create(dto);
         return ResponseEntity.ok(novoPedido);
     }
 
     @PutMapping("/atualizar/{id}")
     public ResponseEntity<PedidoFornecedor> atualizarPedidoFornecedor(@PathVariable Long id,
-            @RequestBody PedidoFornecedorRequestDTO dto) {
+            @Valid @RequestBody PedidoFornecedorRequestDTO dto) {
         PedidoFornecedor atualizado = service.update(id, dto);
         return ResponseEntity.ok(atualizado);
     }

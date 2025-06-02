@@ -3,7 +3,6 @@ package com.web2.movelcontrol.Service;
 import com.web2.movelcontrol.DTO.PedidoRequestDTO;
 import com.web2.movelcontrol.Model.Pedido;
 import com.web2.movelcontrol.Model.Orcamento;
-import com.web2.movelcontrol.Model.NotaFiscal; // Importar NotaFiscal
 import com.web2.movelcontrol.Repository.PedidoRepository;
 import com.web2.movelcontrol.Repository.OrcamentoRepository;
 import com.web2.movelcontrol.Repository.NotaFiscalRepository; // Importar NotaFiscalRepository
