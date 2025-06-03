@@ -1,3 +1,8 @@
+/*
+ * Autor: Jorge Afonso
+ * Responsavel: Jorge Afonso
+ */
+
 package com.web2.movelcontrol.DTO;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,7 +12,7 @@ import java.util.Date;
 import java.util.Objects;
 
 @Schema(name = "NotaFIscalRequestDTO", description = "Dados de entrada para criação de uma nota fiscal")
-public class NotaFIscalRequestDTO {
+public class NotaFiscalRequestDTO {
 
     @Schema(description = "Codido da Nota Fiscal", example = "N°000.000.000")
     @NotBlank(message = "O código não pode ser vazio")
@@ -25,7 +30,7 @@ public class NotaFIscalRequestDTO {
     @NotBlank(message = "O valor da nota fiscal não pode ser vazio")
     private Double valor;
 
-    public NotaFIscalRequestDTO() {
+    public NotaFiscalRequestDTO() {
     }
 
     public String getCodigo() {
@@ -63,7 +68,7 @@ public class NotaFIscalRequestDTO {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        NotaFIscalRequestDTO that = (NotaFIscalRequestDTO) o;
+        NotaFiscalRequestDTO that = (NotaFiscalRequestDTO) o;
         return Objects.equals(codigo, that.codigo) && Objects.equals(dataEmissao, that.dataEmissao) && Objects.equals(idPedido, that.idPedido) && Objects.equals(valor, that.valor);
     }
 

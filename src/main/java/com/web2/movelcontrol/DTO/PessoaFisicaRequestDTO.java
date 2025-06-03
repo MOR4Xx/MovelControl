@@ -1,27 +1,34 @@
+/*
+ * Autor: Jorge Afonso
+ * Responsavel: Jorge Afonso
+ */
+
 package com.web2.movelcontrol.DTO;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.br.CPF;
 
 import java.util.Objects;
 
 @Schema(name = "PessoaFisicaRequestDTO", description = "DTO para criação e atualização de pessoas fisicas")
 public class PessoaFisicaRequestDTO {
 
-    @Schema(description = "Nome da pessoa jurídica", example = "Jorge")
+    @Schema(description = "Nome da pessoa Fisica", example = "Jorge")
     @NotBlank(message = "O nome não pode ser vazio")
     private String nome;
 
-    @Schema(description = "CPF da pessoa jurídica", example = "111.111.111-11")
+    @Schema(description = "CPF da pessoa Fisica", example = "111.111.111-11")
     @NotBlank(message = "O CPF não pode ser nulo")
+    @CPF(message = "Digite um CPF valido")
     private String cpf;
 
-    @Schema(description = "E-mail da pessoa jurídica", example = "jorge@gmail.com")
+    @Schema(description = "E-mail da pessoa Fisica", example = "jorge@gmail.com")
     @NotBlank(message = "O email não pode ser vazio")
     private String email;
 
-    @Schema(description = "Telefone da pessoa juridica", example = "(64)99999-9999")
+    @Schema(description = "Telefone da pessoa Fisica", example = "(64)99999-9999")
     private String telefone;
 
     @Schema(description = "Tipo da pessoa FISICA", example = "FISICA")

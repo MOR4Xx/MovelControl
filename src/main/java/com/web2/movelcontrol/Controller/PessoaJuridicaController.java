@@ -1,3 +1,8 @@
+/*
+ * Autor: Jorge Afonso
+ * Responsavel: Jorge Afonso
+ */
+
 package com.web2.movelcontrol.Controller;
 
 import com.web2.movelcontrol.DTO.DataMapper;
@@ -35,11 +40,11 @@ public class PessoaJuridicaController {
                     ),
                     @ApiResponse(responseCode = "400", description = "Requisição inválida devido a dados de entrada incorretos ou incompletos.",
                             content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponseDTO.class))
+                                    schema = @Schema(implementation = PessoaJuridicaRequestDTO.class))
                     ),
                     @ApiResponse(responseCode = "409", description = "Conflito. A Pessoa Jurídica com o CNPJ fornecido já existe.",
                             content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponseDTO.class))
+                                    schema = @Schema(implementation = PessoaJuridicaRequestDTO.class))
                     ),
                     @ApiResponse(responseCode = "500", description = "Erro interno do servidor.",
                             content = @Content(mediaType = "application/json",
@@ -105,7 +110,10 @@ public class PessoaJuridicaController {
                     @ApiResponse(responseCode = "200", description = "Pessoa Jurídica atualizada com sucesso",
                             content = @Content(schema = @Schema(implementation = PessoaJuridicaResponseDTO.class))),
                     @ApiResponse(responseCode = "404", description = "Pessoa Jurídica não encontrada"),
-                    @ApiResponse(responseCode = "400", description = "Dados inválidos")
+                    @ApiResponse(responseCode = "400", description = "Requisição inválida devido a dados de entrada incorretos ou incompletos.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = PessoaJuridicaRequestDTO.class))
+                    )
             }
     )
     @PutMapping(value = "/atualizar/{id}"
