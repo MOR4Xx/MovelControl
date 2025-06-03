@@ -54,20 +54,7 @@ public class PessoaFisicaController {
     @PostMapping(value = "/criar",
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PessoaFisicaResponseDTO> createPessoaFisica(@RequestBody @Valid PessoaFisicaRequestDTO pfDTO) {
-        PessoaFisica pf = new PessoaFisica();
-        pf.setNome(pfDTO.getNome());
-        pf.setTelefone(pfDTO.getTelefone());
-        pf.setCpf(pfDTO.getCpf());
-        pf.setEmail(pfDTO.getEmail());
-
-        Endereco endereco = new Endereco();
-        endereco.setCep(pfDTO.getEndereco().getCep());
-        endereco.setRua(pfDTO.getEndereco().getRua());
-        endereco.setBairro(pfDTO.getEndereco().getBairro());
-        endereco.setNumero(pfDTO.getEndereco().getNumero());
-        endereco.setComplemento(pfDTO.getEndereco().getComplemento());
-
-        pf.setEndereco(endereco);
+        PessoaFisica pf = DataMapper.parseObject(pfDTO, PessoaFisica.class);
 
         service.create(pf);
 

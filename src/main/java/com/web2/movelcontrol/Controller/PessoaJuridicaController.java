@@ -55,20 +55,7 @@ public class PessoaJuridicaController {
     @PostMapping(value = "/criar",
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PessoaJuridicaResponseDTO> createPessoaJuridica(@RequestBody @Valid PessoaJuridicaRequestDTO requestDTO) {
-        PessoaJuridica pj = new PessoaJuridica();
-        pj.setNome(requestDTO.getNome());
-        pj.setTelefone(requestDTO.getTelefone());
-        pj.setCnpj(requestDTO.getCnpj());
-        pj.setEmail(requestDTO.getEmail());
-
-        Endereco endereco = new Endereco();
-        endereco.setCep(requestDTO.getEndereco().getCep());
-        endereco.setRua(requestDTO.getEndereco().getRua());
-        endereco.setBairro(requestDTO.getEndereco().getBairro());
-        endereco.setNumero(requestDTO.getEndereco().getNumero());
-        endereco.setComplemento(requestDTO.getEndereco().getComplemento());
-
-        pj.setEndereco(endereco);
+        PessoaJuridica pj = DataMapper.parseObject(requestDTO, PessoaJuridica.class);
 
         service.create(pj);
 
