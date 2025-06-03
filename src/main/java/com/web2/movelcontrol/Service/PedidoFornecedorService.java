@@ -22,8 +22,7 @@ public class PedidoFornecedorService {
         @Autowired
         private FornecedorRepository fornecedorRepository;
 
-        @Autowired
-        private ItemPedidoFornecedorRepository itemPedidoFornecedorRepository;
+
 
         public PedidoFornecedor create(PedidoFornecedorRequestDTO dto) {
                 PedidoFornecedor pedido = new PedidoFornecedor();

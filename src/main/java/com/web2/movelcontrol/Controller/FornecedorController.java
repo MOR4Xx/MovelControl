@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.web2.movelcontrol.Model.Fornecedor;
 import com.web2.movelcontrol.Service.FornecedorService;
 
+import jakarta.validation.Valid;
+
 
 @RestController
 @RequestMapping("/fornecedor")
@@ -25,7 +27,7 @@ public class FornecedorController {
 
 @PostMapping(value = "/criar",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Fornecedor createFornecedor(@RequestBody Fornecedor fornecedor) {
+    public Fornecedor createFornecedor(@RequestBody @Valid Fornecedor fornecedor) {
         return service.create(fornecedor);
     }
 
@@ -35,7 +37,7 @@ public class FornecedorController {
     }
 
         @PutMapping("/atualizar/{id}")
-    public Fornecedor atualizarFornecedor(@PathVariable Long id, @RequestBody Fornecedor pf){
+    public Fornecedor atualizarFornecedor(@PathVariable Long id, @Valid  @RequestBody Fornecedor pf){
         return service.update(id, pf);
     }
 

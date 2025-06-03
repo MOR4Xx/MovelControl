@@ -1,9 +1,15 @@
 package com.web2.movelcontrol.Model;
 
+import org.hibernate.validator.constraints.br.CNPJ;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 @Table(name = "fornecedor")
 public class Fornecedor {
@@ -11,15 +17,25 @@ public class Fornecedor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
+
+    @NotBlank
+    @CNPJ
     @Column(name = "cnpj", nullable = false, length = 14)
     private String cnpj;
+
+    @NotBlank
     @Column(name = "telefone", length = 20)
     private String telefone;
+
+    @NotBlank
+    @Email
     @Column(name = "email", length = 100)
     private String email;
 
+    @NotNull
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "endereco_id", referencedColumnName = "id")
     private Endereco endereco;
@@ -84,6 +100,4 @@ public class Fornecedor {
         this.endereco = endereco;
     }
 
-    
 }
-

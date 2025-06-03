@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 
 @Entity
 @Table(name = "pedido_fornecedor")
@@ -15,6 +17,8 @@ public class PedidoFornecedor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "data_pedido")
     private Date dataPedido;
 
@@ -25,6 +29,7 @@ public class PedidoFornecedor {
     @JoinColumn(name = "fornecedor_id")
     private Fornecedor fornecedor;
 
+    
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemPedidoFornecedor> itens_pedido = new ArrayList<>();
 

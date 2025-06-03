@@ -2,10 +2,20 @@ package com.web2.movelcontrol.DTO;
 
 import java.util.*;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 public class PedidoFornecedorRequestDTO {
+    @NotBlank
     private String status;
+    @NotNull
     private Date dataPedido;
+    @NotNull
     private Long fornecedorId;
+    @NotEmpty
     private List<ItemPedidoFornecedorRequestDTO> itens;
     public String getStatus() {
         return status;
