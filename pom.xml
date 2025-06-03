@@ -88,7 +88,6 @@
             <artifactId>spring-boot-starter-validation</artifactId>
             <version>3.5.0</version>
         </dependency>
-
     </dependencies>
 
     <build>
