@@ -130,7 +130,7 @@ public class OrcamentoService {
                     // Item já existe no orçamento, apenas atualiza a quantidade
                     logger.fine("Atualizando quantidade do item ID " + itemDto.getItemId() + " para " + itemDto.getQuantity());
                     itemExistente.setQuantity(itemDto.getQuantity());
-                    itensAtualizadosDaRequisicao.add(itemExistente); // Adiciona o item existente (e atualizado) à nova coleção
+                    itensAtualizadosDaRequisicao.add(itemExistente); // Adiciona o item existente
                 } else {
                     // Item é novo para este orçamento, cria e adiciona
                     logger.fine("Adicionando novo item ID " + itemDto.getItemId() + " com quantidade " + itemDto.getQuantity());
@@ -148,7 +148,7 @@ public class OrcamentoService {
         }
         
         // Substitui a coleção antiga pela nova (já atualizada/com novos itens)
-        // O orphanRemoval=true cuidará de remover do banco os itens que não estão mais nesta nova coleção
+        // O orphanRemoval=true cuida de remover do banco os itens que não estão mais na nova coleção
         orcamentoExistente.getItensOrcamento().clear();
         orcamentoExistente.getItensOrcamento().addAll(itensAtualizadosDaRequisicao);
         

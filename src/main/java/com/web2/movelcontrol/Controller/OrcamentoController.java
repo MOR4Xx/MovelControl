@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/orcamentos")
-
+@Tag(name = "Orçamentos", description = "Endpoints para gerenciar Orçamentos")
 public class OrcamentoController {
     
     @Autowired
@@ -32,11 +33,21 @@ public class OrcamentoController {
     
     
     @PostMapping
-    @Operation(summary = "Cria um novo orçamento", responses = {
-            @ApiResponse(responseCode = "201", description = "Orçamento criado com sucesso",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = OrcamentoResponseDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Dados de requisição inválidos")
-    })
+    @Operation(summary = "Cria um novo orçamento", // Resumo da operação
+            description = "Este endpoint permite a criação de um novo orçamento no sistema. É necessário fornecer os detalhes do orçamento, incluindo o ID do cliente e os itens desejados com suas quantidades.", // Descrição mais detalhada
+            tags = {"Orçamentos"}, // Reafirma a tag, útil se tiver múltiplas
+            responses = {
+                    @ApiResponse(description = "Orçamento Criado com Sucesso", responseCode = "201", // Descrição e código HTTP para sucesso
+                            content = @Content(mediaType = "application/json", // Tipo de mídia da resposta
+                                    schema = @Schema(implementation = OrcamentoResponseDTO.class) // Schema do DTO de resposta
+                            )
+                    ),
+                    @ApiResponse(description = "Requisição Inválida", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Não Autorizado", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Recurso Não Encontrado (ex: Cliente ou Item não existe)", responseCode = "404", content = @Content),
+                    @ApiResponse(description = "Erro Interno do Servidor", responseCode = "500", content = @Content)
+            }
+    )
     public ResponseEntity<OrcamentoResponseDTO> criarOrcamento(@RequestBody @Valid OrcamentoRequestDTO orcamentoDTO) {
         Orcamento orcamentoSalvo = orcamentoService.criarOrcamento(orcamentoDTO);
         OrcamentoResponseDTO responseDTO = mapToOrcamentoResponseDTO(orcamentoSalvo);
@@ -45,11 +56,20 @@ public class OrcamentoController {
     
     
     @GetMapping("/{id}")
-    @Operation(summary = "Busca um orçamento por ID", responses = {
-            @ApiResponse(responseCode = "200", description = "Orçamento encontrado",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = OrcamentoResponseDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Orçamento não encontrado")
-    })
+    @Operation(summary = "Busca um orçamento por ID",
+            description = "Retorna os detalhes de um orçamento específico com base no seu ID.",
+            tags = {"Orçamentos"},
+            responses = {
+                    @ApiResponse(description = "Orçamento Encontrado", responseCode = "200",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = OrcamentoResponseDTO.class)
+                            )
+                    ),
+                    @ApiResponse(description = "Orçamento Não Encontrado", responseCode = "404", content = @Content),
+                    @ApiResponse(description = "Requisição Inválida (ex: ID mal formatado)", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Não Autorizado", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Erro Interno do Servidor", responseCode = "500", content = @Content)
+            })
     public ResponseEntity<OrcamentoResponseDTO> buscarOrcamentoPorId(@PathVariable Long id) {
         Orcamento orcamento = orcamentoService.buscarOrcamentoPorId(id);
         OrcamentoResponseDTO responseDTO = mapToOrcamentoResponseDTO(orcamento);
@@ -58,10 +78,20 @@ public class OrcamentoController {
     
    
     @GetMapping
-    @Operation(summary = "Lista todos os orçamentos", responses = {
-            @ApiResponse(responseCode = "200", description = "Lista de orçamentos",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = OrcamentoResponseDTO.class)))
-    })
+    @Operation(summary = "Lista todos os orçamentos",
+            description = "Retorna uma lista de todos os orçamentos cadastrados no sistema.",
+            tags = {"Orçamentos"},
+            responses = {
+                    @ApiResponse(description = "Lista de Orçamentos Obtida com Sucesso", responseCode = "200",
+                            content = @Content(mediaType = "application/json",
+                                    // Como é uma lista, usamos arraySchema
+                                    array = @io.swagger.v3.oas.annotations.media.ArraySchema(schema = @Schema(implementation = OrcamentoResponseDTO.class))
+                            )
+                    ),
+                    @ApiResponse(description = "Não Autorizado", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Erro Interno do Servidor", responseCode = "500", content = @Content)
+            }
+    )
     public ResponseEntity<List<OrcamentoResponseDTO>> listarTodosOrcamentos() {
         List<Orcamento> orcamentos = orcamentoService.listarTodosOrcamentos();
         List<OrcamentoResponseDTO> responseDTOs = orcamentos.stream()
@@ -71,12 +101,21 @@ public class OrcamentoController {
     }
     
     @PutMapping("/{id}")
-    @Operation(summary = "Atualiza um orçamento existente", responses = {
-            @ApiResponse(responseCode = "200", description = "Orçamento atualizado com sucesso",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = OrcamentoResponseDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Dados de requisição inválidos"),
-            @ApiResponse(responseCode = "404", description = "Orçamento não encontrado")
-    })
+    @Operation(summary = "Atualiza um orçamento existente",
+            description = "Permite a atualização dos dados de um orçamento existente, identificado pelo seu ID. É necessário fornecer os novos dados do orçamento no corpo da requisição.",
+            tags = {"Orçamentos"},
+            responses = {
+                    @ApiResponse(description = "Orçamento Atualizado com Sucesso", responseCode = "200",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = OrcamentoResponseDTO.class)
+                            )
+                    ),
+                    @ApiResponse(description = "Requisição Inválida (dados do orçamento)", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Não Autorizado", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Orçamento Não Encontrado", responseCode = "404", content = @Content),
+                    @ApiResponse(description = "Erro Interno do Servidor", responseCode = "500", content = @Content)
+            }
+    )
     public ResponseEntity<OrcamentoResponseDTO> atualizarOrcamento(@PathVariable Long id, @RequestBody @Valid OrcamentoRequestDTO orcamentoDTO) {
         Orcamento orcamentoAtualizado = orcamentoService.atualizarOrcamento(id, orcamentoDTO);
         OrcamentoResponseDTO responseDTO = mapToOrcamentoResponseDTO(orcamentoAtualizado);
@@ -84,22 +123,23 @@ public class OrcamentoController {
     }
     
     @DeleteMapping("/{id}")
-    @Operation(summary = "Deleta um orçamento por ID", responses = {
-            @ApiResponse(responseCode = "204", description = "Orçamento deletado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Orçamento não encontrado")
-    })
+    @Operation(summary = "Deleta um orçamento por ID",
+            description = "Remove um orçamento do sistema com base no seu ID.",
+            tags = {"Orçamentos"},
+            responses = {
+                    @ApiResponse(description = "Orçamento Deletado com Sucesso", responseCode = "204", content = @Content), // Sem conteúdo no corpo da resposta
+                    @ApiResponse(description = "Requisição Inválida (ex: ID mal formatado)", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Não Autorizado", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Orçamento Não Encontrado", responseCode = "404", content = @Content),
+                    @ApiResponse(description = "Erro Interno do Servidor", responseCode = "500", content = @Content)
+            }
+    )
     public ResponseEntity<Void> deletarOrcamento(@PathVariable Long id) {
         orcamentoService.deletarOrcamento(id);
         return ResponseEntity.noContent().build();
     }
     
-    // --- Método auxiliar para mapear Entidade para DTO de Resposta ---
-    // PORQUÊ: Centraliza a lógica de mapeamento de Orcamento para OrcamentoResponseDTO.
-    //         Seu DataMapper é genérico, mas para preencher DTOs aninhados (ClienteResponseDTO, ItemOrcamentoResponseDTO)
-    //         de forma customizada, um método helper pode ser mais claro ou complementar ao ModelMapper
-    //         se o ModelMapper não estiver configurado para esses casos complexos.
-    //         Se o seu DataMapper já consegue lidar com isso, pode usá-lo diretamente.
-    //         ModelMapper pode ser configurado com TypeMaps para esses casos.
+    
     private OrcamentoResponseDTO mapToOrcamentoResponseDTO(Orcamento orcamento) {
         if (orcamento == null) {
             return null;

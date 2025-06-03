@@ -1,10 +1,9 @@
 package com.web2.movelcontrol.Model;
 
 import jakarta.persistence.*;
-import java.io.Serializable; // Boa prática para chaves compostas
+import java.io.Serializable;
 
-// --- Entidade para a tabela associativa OrcamentoItem ---
-// --- Esta entidade permitirá que um Orçamento tenha múltiplos Itens, com quantidades específicas ---
+// entidade para relacionamento n:n dentre orçamento e item
 
 @Entity
 @Table(name = "orcamento_item")

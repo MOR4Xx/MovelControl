@@ -15,14 +15,14 @@ public class PedidoRequestDTO {
 	
 	@Schema(description = "Status do pedido", example = "AGUARDANDO_PAGAMENTO", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotBlank(message = "O status não pode ser vazio.")
-	@Size(max = 50, message = "O status deve ter no máximo 10 caracteres.") // Conforme entidade Pedido
+	@Size(max = 50, message = "O status deve ter no máximo 50 caracteres.") // Conforme entidade Pedido
 	private String status;
 	
 	@Schema(description = "Descrição adicional para o pedido", example = "Pedido urgente, cliente VIP.")
 	@Size(max = 100, message = "A descrição deve ter no máximo 100 caracteres.") // Conforme entidade Pedido
 	private String descricao;
 	
-	@Schema(description = "ID do Orçamento vinculado a este pedido.", example = "6", requiredMode = Schema.RequiredMode.REQUIRED)
+	@Schema(description = "ID do Orçamento vinculado a este pedido.", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull(message = "O ID do orçamento não pode ser nulo.")
 	private Long orcamentoId;
 	
