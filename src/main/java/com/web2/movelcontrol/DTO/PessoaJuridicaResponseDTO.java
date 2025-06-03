@@ -1,6 +1,10 @@
+/*
+ * Autor: Jorge Afonso
+ * Responsavel: Jorge Afonso
+ */
+
 package com.web2.movelcontrol.DTO;
 
-import com.web2.movelcontrol.Model.Endereco;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Objects;

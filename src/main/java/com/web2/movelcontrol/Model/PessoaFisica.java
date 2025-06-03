@@ -1,17 +1,20 @@
+/*
+ * Autor: Jorge Afonso
+ * Responsavel: Jorge Afonso
+ */
+
 package com.web2.movelcontrol.Model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue; // Importar
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "pessoa")
+@DiscriminatorValue("FISICA")
 public class PessoaFisica extends Pessoa {
 
     @Column(name = "identificador", unique = true, length = 50)
     private String cpf;
-    @Column(length = 10)
-    private String tipo = "FISICA";
 
     public PessoaFisica() {
     }
@@ -27,13 +30,5 @@ public class PessoaFisica extends Pessoa {
 
     public void setCpf(String cpf) {
         this.cpf = cpf;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
     }
 }

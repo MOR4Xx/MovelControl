@@ -93,4 +93,15 @@ public class GlobalExceptionHandler {
         response.put("message", message);
         return ResponseEntity.status(status).body(response);
     }
+    
+    @ExceptionHandler(com.web2.movelcontrol.Exceptions.NotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleCustomNotFoundException(com.web2.movelcontrol.Exceptions.NotFoundException ex) {
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                HttpStatus.NOT_FOUND.value(),
+                "Not Found",
+                ex.getMessage(),
+                java.time.LocalDateTime.now()
+        );
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
 }

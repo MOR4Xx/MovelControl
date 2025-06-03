@@ -1,16 +1,20 @@
+/*
+ * Autor: Jorge Afonso
+ * Responsavel: Jorge Afonso
+ */
+
 package com.web2.movelcontrol.Model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue; // Importar
+import jakarta.persistence.Entity;
 
 @Entity
-@Table(name = "pessoa")
+@DiscriminatorValue("JURIDICA")
 public class PessoaJuridica extends Pessoa {
 
     @Column(name = "identificador", unique = true, length = 50)
     private String cnpj;
-
-    @Column(length = 10)
-    private String tipo = "JURIDICA";
 
     public PessoaJuridica() {}
 
@@ -25,13 +29,5 @@ public class PessoaJuridica extends Pessoa {
 
     public void setCnpj(String cnpj) {
         this.cnpj = cnpj;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
     }
 }

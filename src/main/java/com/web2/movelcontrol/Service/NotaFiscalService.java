@@ -1,3 +1,8 @@
+/*
+ * Autor: Jorge Afonso
+ * Responsavel: Jorge Afonso
+ */
+
 package com.web2.movelcontrol.Service;
 
 import com.web2.movelcontrol.Exceptions.NotFoundException;
