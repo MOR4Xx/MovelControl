@@ -8,6 +8,7 @@ package com.web2.movelcontrol.DTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.br.CNPJ;
 
 import java.util.Objects;
 
@@ -20,6 +21,7 @@ public class PessoaJuridicaRequestDTO {
 
     @Schema(description = "CNPJ da pessoa jurídica", example = "11.111.111/0001-89")
     @NotBlank(message = "O cnpj não pode ser nulo")
+    @CNPJ(message = "Digite um CNPJ valido")
     private String cnpj;
 
     @Schema(description = "E-mail da pessoa jurídica", example = "jorge@gmail.com")
