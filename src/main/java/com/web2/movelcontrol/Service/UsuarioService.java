@@ -48,6 +48,13 @@ public class UsuarioService {
         return usuarios;
     }
 
+    public List<Usuario> findAll() {
+        logger.info("Buscando todos os usuários");
+        List<Usuario> usuarios = repository.findAll();
+
+        return usuarios;
+    }
+
     public Usuario update(Long id, Usuario usuarioUpdate){
         Usuario usuario = repository.findById(id)
                 .orElseThrow(()-> new NotFoundException("Usuario "+ usuarioUpdate.getId()));

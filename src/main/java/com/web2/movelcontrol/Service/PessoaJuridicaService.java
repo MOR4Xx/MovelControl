@@ -12,6 +12,7 @@ import com.web2.movelcontrol.Repository.PessoaJuridicaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 @Service
@@ -30,6 +31,34 @@ public class PessoaJuridicaService {
         logger.info("Pessoa Jurídica buscada por ID: " + id);
         return repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Pessoa Jurídica não encontrada com ID: " + id));
+    }
+
+    public List<PessoaJuridica> findByNome(String nome) {
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
+        }
+
+        logger.info("Buscando pessoa jurídica por nome: " + nome);
+        List<PessoaJuridica> pessoasJuridicas = repository.findByNome(nome);
+
+        if (pessoasJuridicas.isEmpty()) {
+            logger.warning("Nenhuma Pessoa Juridica encontrada com o nome: " + nome);
+            throw new NotFoundException("Nenhuma Pessoa Juridica encontrada com o nome: " + nome);
+        }
+
+        return pessoasJuridicas;
+    }
+
+    public List<PessoaJuridica> findAll() {
+        logger.info("Buscando todas as pessoas jurídicas");
+        List<PessoaJuridica> pessoasJuridicas = repository.findAll();
+
+        if (pessoasJuridicas.isEmpty()) {
+            logger.warning("Nenhuma Pessoa Juridica encontrada");
+            throw new NotFoundException("Nenhuma Pessoa Juridica encontrada");
+        }
+
+        return pessoasJuridicas;
     }
 
     public PessoaJuridica update(Long id, PessoaJuridica pessoaUpdate) {

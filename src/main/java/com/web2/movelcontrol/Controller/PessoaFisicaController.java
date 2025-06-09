@@ -5,9 +5,10 @@
 
 package com.web2.movelcontrol.Controller;
 
-import com.web2.movelcontrol.DTO.*;
+import com.web2.movelcontrol.DTO.DataMapper;
+import com.web2.movelcontrol.DTO.PessoaFisicaRequestDTO;
+import com.web2.movelcontrol.DTO.PessoaFisicaResponseDTO;
 import com.web2.movelcontrol.Exceptions.ErrorResponseDTO;
-import com.web2.movelcontrol.Model.Endereco;
 import com.web2.movelcontrol.Model.PessoaFisica;
 import com.web2.movelcontrol.Service.PessoaFisicaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/pf")
@@ -84,6 +87,36 @@ public class PessoaFisicaController {
         return ResponseEntity.ok(DataMapper.parseObject(pessoaFisica, PessoaFisicaResponseDTO.class));
     }
 
+    @Operation(
+            summary = "Lista todas as Pessoas Fisicas",
+            description = "Retorna todas as Pessoas Fisicas registrada",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Pessoas Fisicas encontrado"),
+                    @ApiResponse(responseCode = "404", description = "Pessoas Fisicas não encontrado"),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @GetMapping("/listar")
+    public ResponseEntity<List<PessoaFisicaResponseDTO>> findAll() {
+        List<PessoaFisica> pf = service.findAll();
+
+        return ResponseEntity.ok(DataMapper.parseListObjects(pf, PessoaFisicaResponseDTO.class));
+    }
+
+    @Operation(
+            summary = "Buscar Pessoa Fisica por Nome",
+            description = "Retorna os dados de uma Pessoa Fisica específico pelo Nome",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Pessoa Fisica encontrado"),
+                    @ApiResponse(responseCode = "404", description = "Pessoa Fisica não encontrado"),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @GetMapping("/nome/{nome}")
+    public List<PessoaFisica> findByNome(@PathVariable String nome) {
+        return service.findByNome(nome);
+    }
+
 
     @Operation(
             summary = "Atualizar Pessoa Jurídica",
@@ -102,7 +135,7 @@ public class PessoaFisicaController {
     )
     @PutMapping(value = "/atualizar/{id}"
             , consumes = MediaType.APPLICATION_JSON_VALUE)
-    public PessoaFisica atualizarPessoaFisica(@PathVariable Long id, @RequestBody PessoaFisicaRequestDTO pfAntigo){
+    public PessoaFisica atualizarPessoaFisica(@PathVariable Long id, @RequestBody PessoaFisicaRequestDTO pfAntigo) {
         PessoaFisica pessoaFisica = DataMapper.parseObject(pfAntigo, PessoaFisica.class);
 
         return service.update(id, pessoaFisica);

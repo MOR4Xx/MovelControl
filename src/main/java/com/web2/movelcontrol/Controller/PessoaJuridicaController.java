@@ -8,8 +8,10 @@ package com.web2.movelcontrol.Controller;
 import com.web2.movelcontrol.DTO.DataMapper;
 import com.web2.movelcontrol.DTO.PessoaJuridicaRequestDTO;
 import com.web2.movelcontrol.DTO.PessoaJuridicaResponseDTO;
+import com.web2.movelcontrol.DTO.UsuarioResponseDTO;
 import com.web2.movelcontrol.Exceptions.ErrorResponseDTO;
 import com.web2.movelcontrol.Model.Endereco;
+import com.web2.movelcontrol.Model.PessoaFisica;
 import com.web2.movelcontrol.Model.PessoaJuridica;
 import com.web2.movelcontrol.Service.PessoaJuridicaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,9 +21,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.swing.text.html.parser.Entity;
+import java.util.Date;
+import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/pj")
@@ -79,10 +90,68 @@ public class PessoaJuridicaController {
             }
     )
     @GetMapping("/{id}")
-    public ResponseEntity<PessoaJuridicaResponseDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<PessoaJuridicaResponseDTO>> findById(@PathVariable Long id) {
         PessoaJuridica pj = service.findById(id);
+        PessoaJuridicaResponseDTO dto = DataMapper.parseObject(pj, PessoaJuridicaResponseDTO.class);
 
-        return ResponseEntity.ok(DataMapper.parseObject(pj, PessoaJuridicaResponseDTO.class));
+        EntityModel<PessoaJuridicaResponseDTO> entityModel = EntityModel.of(dto,
+                linkTo(methodOn(PessoaJuridicaController.class).findByNome(dto.getNome())).withRel("buscarPorNome"),
+                linkTo(methodOn(PessoaJuridicaController.class).findAll()).withRel("listarTodos"),
+                linkTo(methodOn(PessoaJuridicaController.class).atualizarPessoaJuridica(pj.getId(), null)).withRel("atualizar"),
+                linkTo(methodOn(PessoaJuridicaController.class).deletePessoaJuridica(pj.getId())).withRel("deletar")
+        );
+
+        return ResponseEntity.ok(entityModel);
+    }
+
+    @Operation(
+            summary = "Buscar Pessoa Juridica por Nome",
+            description = "Retorna os dados das Pessoa Juridica específico pelo Nome",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Pessoa Juridica encontrado"),
+                    @ApiResponse(responseCode = "404", description = "Pessoa Juridica não encontrado"),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @GetMapping("/nome/{nome}")
+    public List<EntityModel<PessoaJuridicaResponseDTO>> findByNome(@PathVariable String nome) {
+        List<PessoaJuridica> pjs = service.findByNome(nome);
+
+        List<EntityModel<PessoaJuridicaResponseDTO>> responseList = pjs.stream().map(pj -> {
+            PessoaJuridicaResponseDTO dto = DataMapper.parseObject(pj, PessoaJuridicaResponseDTO.class);
+            return EntityModel.of(dto,
+                    linkTo(methodOn(PessoaJuridicaController.class).findById(pj.getId())).withRel("BuscarPorId"),
+                    linkTo(methodOn(PessoaJuridicaController.class).findAll()).withRel("listarTodos"),
+                    linkTo(methodOn(PessoaJuridicaController.class).atualizarPessoaJuridica(pj.getId(), null)).withRel("atualizar"),
+                    linkTo(methodOn(PessoaJuridicaController.class).deletePessoaJuridica(pj.getId())).withRel("deletar")
+            );
+        }).toList();
+
+        return responseList;
+    }
+    
+    @Operation(
+            summary = "Lista todas as Pessoas Juridicas",
+            description = "Retorna todas as Pessoas Juridicas registrada",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Pessoas Juridicas encontrado"),
+                    @ApiResponse(responseCode = "404", description = "Pessoas Juridicas não encontrado"),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+            }
+    )
+    @GetMapping("/listar")
+    public List<EntityModel<PessoaJuridicaResponseDTO>> findAll() {
+        List<PessoaJuridica> pjs = service.findAll();
+
+        List<EntityModel<PessoaJuridicaResponseDTO>> responseList = pjs.stream().map(pj -> {
+            PessoaJuridicaResponseDTO dto = DataMapper.parseObject(pj, PessoaJuridicaResponseDTO.class);
+            return EntityModel.of(dto,
+                    linkTo(methodOn(PessoaJuridicaController.class).findById(pj.getId())).withRel("BuscarPorId"),
+                    linkTo(methodOn(PessoaJuridicaController.class).findByNome(dto.getNome())).withRel("buscarPorNome")
+            );
+        }).toList();
+
+        return responseList;
     }
 
     @Operation(
@@ -94,8 +163,7 @@ public class PessoaJuridicaController {
                     content = @Content(schema = @Schema(implementation = PessoaJuridicaResponseDTO.class))
             ),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Pessoa Jurídica atualizada com sucesso",
-                            content = @Content(schema = @Schema(implementation = PessoaJuridicaResponseDTO.class))),
+                    @ApiResponse(responseCode = "200", description = "Pessoa Jurídica atualizada com sucesso"),
                     @ApiResponse(responseCode = "404", description = "Pessoa Jurídica não encontrada"),
                     @ApiResponse(responseCode = "400", description = "Requisição inválida devido a dados de entrada incorretos ou incompletos.",
                             content = @Content(mediaType = "application/json",
@@ -120,7 +188,8 @@ public class PessoaJuridicaController {
             }
     )
     @DeleteMapping(value = "/deletar/{id}")
-    public void deletePessoaJuridica(@PathVariable Long id) {
+    public PessoaFisica deletePessoaJuridica(@PathVariable Long id) {
         service.delete(id);
+        return null;
     }
 }

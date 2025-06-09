@@ -9,9 +9,10 @@ import com.web2.movelcontrol.Exceptions.NotFoundException;
 import com.web2.movelcontrol.Model.Endereco;
 import com.web2.movelcontrol.Model.PessoaFisica;
 import com.web2.movelcontrol.Repository.PessoaFisicaRepository;
-import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 @Service
@@ -22,7 +23,7 @@ public class PessoaFisicaService {
 
     Logger logger = Logger.getLogger(PessoaFisicaService.class.getName());
 
-    public PessoaFisica create(PessoaFisica pf){
+    public PessoaFisica create(PessoaFisica pf) {
         logger.info("Pessoa Fisica criada com sucesso");
         return repository.save(pf);
     }
@@ -33,9 +34,37 @@ public class PessoaFisicaService {
                 .orElseThrow(() -> new NotFoundException("Pessoa Fisica não encontrada com ID: " + id));
     }
 
-    public PessoaFisica update(Long id, PessoaFisica pessoaUpdate){
+    public List<PessoaFisica> findByNome(String nome) {
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
+        }
+
+        logger.info("Pessoa Fisica buscada por Nome: " + nome);
+        List<PessoaFisica> pessoasFisicas = repository.findByNome(nome);
+
+        if (pessoasFisicas.isEmpty()) {
+            logger.warning("Nenhuma Pessoa Fisica encontrada com o nome: " + nome);
+            throw new NotFoundException("Nenhuma Pessoa Fisica encontrada com o nome: " + nome);
+        }
+
+        return pessoasFisicas;
+    }
+
+    public List<PessoaFisica> findAll() {
+        logger.info("Buscando todas as pessoas fisicas");
+        List<PessoaFisica> pessoasFisicas = repository.findAll();
+
+        if (pessoasFisicas.isEmpty()) {
+            logger.warning("Nenhuma Pessoa Fisica encontrada");
+            throw new NotFoundException("Nenhuma Pessoa Fisica encontrada");
+        }
+
+        return pessoasFisicas;
+    }
+
+    public PessoaFisica update(Long id, PessoaFisica pessoaUpdate) {
         PessoaFisica pessoaFisica = repository.findById(id)
-                .orElseThrow(()-> new NotFoundException("Pessoa Fisica "+id));
+                .orElseThrow(() -> new NotFoundException("Pessoa Fisica " + id));
 
         if (pessoaUpdate.getNome() != null) pessoaFisica.setNome(pessoaUpdate.getNome());
         if (pessoaUpdate.getCpf() != null) pessoaFisica.setCpf(pessoaUpdate.getCpf());
@@ -56,7 +85,7 @@ public class PessoaFisicaService {
         return repository.save(pessoaFisica);
     }
 
-    public void delete(Long id){
+    public void delete(Long id) {
         repository.deleteById(id);
         logger.info("Pessoa Fisica Apagada com sucesso");
     }

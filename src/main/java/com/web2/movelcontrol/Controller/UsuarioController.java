@@ -1,7 +1,7 @@
 /*
-* Autor: Jorge Afonso
-* Responsavel: Jorge Afonso
-*/
+ * Autor: Jorge Afonso
+ * Responsavel: Jorge Afonso
+ */
 
 package com.web2.movelcontrol.Controller;
 
@@ -18,11 +18,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/usuario")
@@ -75,9 +79,19 @@ public class UsuarioController {
             }
     )
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDTO> findById(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<UsuarioResponseDTO>> findById(@PathVariable Long id) {
         Usuario usuario = service.findById(id);
-        return ResponseEntity.ok(DataMapper.parseObject(usuario, UsuarioResponseDTO.class));
+        UsuarioResponseDTO dto = DataMapper.parseObject(usuario, UsuarioResponseDTO.class);
+
+        EntityModel<UsuarioResponseDTO> resource = EntityModel.of(dto,
+                linkTo(methodOn(UsuarioController.class).findById(id)).withSelfRel(),
+                linkTo(methodOn(UsuarioController.class).findByNome(dto.getNome())).withRel("buscarPorNome"),
+                linkTo(methodOn(UsuarioController.class).listarUsuarios()).withRel("listarUsuarios"),
+                linkTo(methodOn(UsuarioController.class).atualizarUsuario(id, null)).withRel("update"),
+                linkTo(methodOn(UsuarioController.class).deletarUsuario(id)).withRel("delete")
+        );
+
+        return ResponseEntity.ok(resource);
     }
 
     @Operation(
@@ -98,6 +112,25 @@ public class UsuarioController {
     public ResponseEntity<List<UsuarioResponseDTO>> findByNome(@PathVariable String nome) {
         List<Usuario> dtos = service.findByNome(nome);
         return ResponseEntity.ok(DataMapper.parseListObjects(dtos, UsuarioResponseDTO.class));
+    }
+
+    @Operation(
+            summary = "Lista todos os Usuarios",
+            description = "Retorna uma lista com todos os usuarios do sistema",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Usuários Encontrados",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = UsuarioResponseDTO.class))),
+                    @ApiResponse(responseCode = "404", description = "Usuários não encontrado"),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class))
+                    )
+            }
+    )
+    @GetMapping("/listar")
+    public ResponseEntity<List<UsuarioResponseDTO>> listarUsuarios() {
+        return ResponseEntity.ok(DataMapper.parseListObjects(service.findAll(), UsuarioResponseDTO.class));
     }
 
     @Operation(
@@ -127,8 +160,9 @@ public class UsuarioController {
             }
     )
     @DeleteMapping(value = "/deletar/{id}")
-    public void deletarUsuario(@PathVariable Long id) {
+    public Usuario deletarUsuario(@PathVariable Long id) {
         service.delete(id);
+        return null;
     }
 
 }
