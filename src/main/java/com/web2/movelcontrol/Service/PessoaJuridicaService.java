@@ -5,15 +5,24 @@
 
 package com.web2.movelcontrol.Service;
 
+import com.web2.movelcontrol.Controller.PessoaJuridicaController;
+import com.web2.movelcontrol.DTO.DataMapper;
+import com.web2.movelcontrol.DTO.PessoaJuridicaRequestDTO;
+import com.web2.movelcontrol.DTO.PessoaJuridicaResponseDTO;
 import com.web2.movelcontrol.Exceptions.NotFoundException;
 import com.web2.movelcontrol.Model.Endereco;
 import com.web2.movelcontrol.Model.PessoaJuridica;
 import com.web2.movelcontrol.Repository.PessoaJuridicaRepository;
+import jakarta.persistence.Entity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.logging.Logger;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 public class PessoaJuridicaService {
@@ -22,31 +31,54 @@ public class PessoaJuridicaService {
 
     private Logger logger = Logger.getLogger(PessoaJuridicaService.class.getName());
 
-    public PessoaJuridica create(PessoaJuridica pj) {
+    public PessoaJuridicaResponseDTO create(PessoaJuridicaRequestDTO pj) {
+        PessoaJuridica pessoaJuridica = DataMapper.parseObject(pj, PessoaJuridica.class);
+
+        repository.save(pessoaJuridica);
+
         logger.info("Pessoa Juridica criada com sucesso");
-        return repository.save(pj);
+        return DataMapper.parseObject(pessoaJuridica, PessoaJuridicaResponseDTO.class);
     }
 
-    public PessoaJuridica findById(Long id) {
+    public EntityModel<PessoaJuridicaResponseDTO> findById(Long id) {
+        PessoaJuridicaResponseDTO pjDTO = DataMapper.parseObject(repository.findById(id).orElseThrow(() -> new NotFoundException("Pessoa Juridica " + id))
+                , PessoaJuridicaResponseDTO.class);
+
+        EntityModel<PessoaJuridicaResponseDTO> response = EntityModel.of(pjDTO,
+                linkTo(methodOn(PessoaJuridicaController.class).findByNome(pjDTO.getNome())).withRel("buscarPorNome"),
+                linkTo(methodOn(PessoaJuridicaController.class).findAll()).withRel("listarPessoasJuridicas"),
+                linkTo(methodOn(PessoaJuridicaController.class).atualizarPessoaJuridica(id, null)).withRel("update"),
+                linkTo(methodOn(PessoaJuridicaController.class).deletePessoaJuridica(id)).withRel("delete")
+                );
+
         logger.info("Pessoa Jurídica buscada por ID: " + id);
-        return repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Pessoa Jurídica não encontrada com ID: " + id));
+        return response;
     }
 
-    public List<PessoaJuridica> findByNome(String nome) {
+    public List<EntityModel<PessoaJuridicaResponseDTO>> findByNome(String nome) {
         if (nome == null || nome.trim().isEmpty()) {
             throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
         }
 
         logger.info("Buscando pessoa jurídica por nome: " + nome);
         List<PessoaJuridica> pessoasJuridicas = repository.findByNome(nome);
+        List<EntityModel<PessoaJuridicaResponseDTO>> pessoasJuridicasDTO = pessoasJuridicas.stream().map(pj -> {
+            PessoaJuridicaResponseDTO pjDTO = DataMapper.parseObject(pj, PessoaJuridicaResponseDTO.class);
+            return EntityModel.of(pjDTO,
+                    linkTo(methodOn(PessoaJuridicaController.class).findById(pj.getId())).withRel("busca por Id"),
+                    linkTo(methodOn(PessoaJuridicaController.class).findByNome(pjDTO.getNome())).withRel("buscarPorNome"),
+                    linkTo(methodOn(PessoaJuridicaController.class).findAll()).withRel("listarPessoasJuridicas"),
+                    linkTo(methodOn(PessoaJuridicaController.class).atualizarPessoaJuridica(pj.getId(), null)).withRel("update"),
+                    linkTo(methodOn(PessoaJuridicaController.class).deletePessoaJuridica(pj.getId())).withRel("delete")
+            );
+        }).toList();
 
         if (pessoasJuridicas.isEmpty()) {
             logger.warning("Nenhuma Pessoa Juridica encontrada com o nome: " + nome);
             throw new NotFoundException("Nenhuma Pessoa Juridica encontrada com o nome: " + nome);
         }
 
-        return pessoasJuridicas;
+        return pessoasJuridicasDTO;
     }
 
     public List<PessoaJuridica> findAll() {

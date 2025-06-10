@@ -51,17 +51,11 @@ public class UsuarioController {
     )
     @PostMapping(value = "/criar",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UsuarioRequestDTO> criarUsuario(@RequestBody @Valid UsuarioRequestDTO RequestDTO) {
-        Usuario usuario = new Usuario();
-        usuario.setNome(RequestDTO.getNome());
-        usuario.setEmail(RequestDTO.getEmail());
-        usuario.setSenha(RequestDTO.getSenha());
-        usuario.setNivel_acesso(RequestDTO.getNivel_acesso());
+    public ResponseEntity<UsuarioResponseDTO> criarUsuario(@RequestBody @Valid UsuarioRequestDTO usuario) {
 
-        service.create(usuario);
+        UsuarioResponseDTO responseDTO = service.create(usuario);
 
-        UsuarioRequestDTO usuarioResponseDTO = DataMapper.parseObject(usuario, UsuarioRequestDTO.class);
-        return ResponseEntity.ok(usuarioResponseDTO);
+        return ResponseEntity.ok(responseDTO);
     }
 
     @Operation(
@@ -80,18 +74,9 @@ public class UsuarioController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<UsuarioResponseDTO>> findById(@PathVariable Long id) {
-        Usuario usuario = service.findById(id);
-        UsuarioResponseDTO dto = DataMapper.parseObject(usuario, UsuarioResponseDTO.class);
+        EntityModel<UsuarioResponseDTO> responseDTO = service.findById(id);
 
-        EntityModel<UsuarioResponseDTO> resource = EntityModel.of(dto,
-                linkTo(methodOn(UsuarioController.class).findById(id)).withSelfRel(),
-                linkTo(methodOn(UsuarioController.class).findByNome(dto.getNome())).withRel("buscarPorNome"),
-                linkTo(methodOn(UsuarioController.class).listarUsuarios()).withRel("listarUsuarios"),
-                linkTo(methodOn(UsuarioController.class).atualizarUsuario(id, null)).withRel("update"),
-                linkTo(methodOn(UsuarioController.class).deletarUsuario(id)).withRel("delete")
-        );
-
-        return ResponseEntity.ok(resource);
+        return ResponseEntity.ok(responseDTO);
     }
 
     @Operation(
@@ -109,9 +94,9 @@ public class UsuarioController {
             }
     )
     @GetMapping("/nome/{nome}")
-    public ResponseEntity<List<UsuarioResponseDTO>> findByNome(@PathVariable String nome) {
-        List<Usuario> dtos = service.findByNome(nome);
-        return ResponseEntity.ok(DataMapper.parseListObjects(dtos, UsuarioResponseDTO.class));
+    public ResponseEntity<List<EntityModel<UsuarioResponseDTO>>> findByNome(@PathVariable String nome) {
+
+        return ResponseEntity.ok(service.findByNome(nome));
     }
 
     @Operation(
@@ -129,8 +114,8 @@ public class UsuarioController {
             }
     )
     @GetMapping("/listar")
-    public ResponseEntity<List<UsuarioResponseDTO>> listarUsuarios() {
-        return ResponseEntity.ok(DataMapper.parseListObjects(service.findAll(), UsuarioResponseDTO.class));
+    public ResponseEntity<List<EntityModel<UsuarioResponseDTO>>> listarUsuarios() {
+        return ResponseEntity.ok(service.findAll());
     }
 
     @Operation(
@@ -145,10 +130,9 @@ public class UsuarioController {
     )
     @PutMapping(value = "/atualizar/{id}"
             , consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Usuario atualizarUsuario(@PathVariable Long id, @RequestBody UsuarioRequestDTO usuarioDTO) {
-        Usuario usuario = DataMapper.parseObject(usuarioDTO, Usuario.class);
+    public ResponseEntity<UsuarioResponseDTO> atualizarUsuario(@PathVariable Long id, @RequestBody UsuarioRequestDTO usuario) {
 
-        return service.update(id, usuario);
+        return ResponseEntity.ok(service.update(id, usuario));
     }
 
     @Operation(

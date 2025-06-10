@@ -65,12 +65,9 @@ public class PessoaJuridicaController {
     )
     @PostMapping(value = "/criar",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PessoaJuridicaResponseDTO> createPessoaJuridica(@RequestBody @Valid PessoaJuridicaRequestDTO requestDTO) {
-        PessoaJuridica pj = DataMapper.parseObject(requestDTO, PessoaJuridica.class);
+    public ResponseEntity<PessoaJuridicaResponseDTO> createPessoaJuridica(@RequestBody @Valid PessoaJuridicaRequestDTO pj) {
 
-        service.create(pj);
-
-        return ResponseEntity.ok(DataMapper.parseObject(pj, PessoaJuridicaResponseDTO.class));
+        return ResponseEntity.ok(service.create(pj));
     }
 
     @Operation(
@@ -91,17 +88,8 @@ public class PessoaJuridicaController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<PessoaJuridicaResponseDTO>> findById(@PathVariable Long id) {
-        PessoaJuridica pj = service.findById(id);
-        PessoaJuridicaResponseDTO dto = DataMapper.parseObject(pj, PessoaJuridicaResponseDTO.class);
 
-        EntityModel<PessoaJuridicaResponseDTO> entityModel = EntityModel.of(dto,
-                linkTo(methodOn(PessoaJuridicaController.class).findByNome(dto.getNome())).withRel("buscarPorNome"),
-                linkTo(methodOn(PessoaJuridicaController.class).findAll()).withRel("listarTodos"),
-                linkTo(methodOn(PessoaJuridicaController.class).atualizarPessoaJuridica(pj.getId(), null)).withRel("atualizar"),
-                linkTo(methodOn(PessoaJuridicaController.class).deletePessoaJuridica(pj.getId())).withRel("deletar")
-        );
-
-        return ResponseEntity.ok(entityModel);
+        return ResponseEntity.ok(service.findById(id));
     }
 
     @Operation(
@@ -114,20 +102,9 @@ public class PessoaJuridicaController {
             }
     )
     @GetMapping("/nome/{nome}")
-    public List<EntityModel<PessoaJuridicaResponseDTO>> findByNome(@PathVariable String nome) {
-        List<PessoaJuridica> pjs = service.findByNome(nome);
+    public ResponseEntity<List<EntityModel<PessoaJuridicaResponseDTO>>> findByNome(@PathVariable String nome) {
 
-        List<EntityModel<PessoaJuridicaResponseDTO>> responseList = pjs.stream().map(pj -> {
-            PessoaJuridicaResponseDTO dto = DataMapper.parseObject(pj, PessoaJuridicaResponseDTO.class);
-            return EntityModel.of(dto,
-                    linkTo(methodOn(PessoaJuridicaController.class).findById(pj.getId())).withRel("BuscarPorId"),
-                    linkTo(methodOn(PessoaJuridicaController.class).findAll()).withRel("listarTodos"),
-                    linkTo(methodOn(PessoaJuridicaController.class).atualizarPessoaJuridica(pj.getId(), null)).withRel("atualizar"),
-                    linkTo(methodOn(PessoaJuridicaController.class).deletePessoaJuridica(pj.getId())).withRel("deletar")
-            );
-        }).toList();
-
-        return responseList;
+        return ResponseEntity.ok(service.findByNome(nome));
     }
     
     @Operation(
