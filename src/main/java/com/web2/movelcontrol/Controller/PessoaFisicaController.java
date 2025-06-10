@@ -7,7 +7,6 @@ package com.web2.movelcontrol.Controller;
 
 import com.web2.movelcontrol.DTO.*;
 import com.web2.movelcontrol.Exceptions.ErrorResponseDTO;
-import com.web2.movelcontrol.Model.Endereco;
 import com.web2.movelcontrol.Model.PessoaFisica;
 import com.web2.movelcontrol.Service.PessoaFisicaService;
 import io.swagger.v3.oas.annotations.Operation;

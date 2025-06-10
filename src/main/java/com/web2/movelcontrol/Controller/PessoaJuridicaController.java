@@ -9,7 +9,6 @@ import com.web2.movelcontrol.DTO.DataMapper;
 import com.web2.movelcontrol.DTO.PessoaJuridicaRequestDTO;
 import com.web2.movelcontrol.DTO.PessoaJuridicaResponseDTO;
 import com.web2.movelcontrol.Exceptions.ErrorResponseDTO;
-import com.web2.movelcontrol.Model.Endereco;
 import com.web2.movelcontrol.Model.PessoaJuridica;
 import com.web2.movelcontrol.Service.PessoaJuridicaService;
 import io.swagger.v3.oas.annotations.Operation;
