@@ -5,14 +5,10 @@
 
 package com.web2.movelcontrol.Controller;
 
-import com.web2.movelcontrol.DTO.DataMapper;
 import com.web2.movelcontrol.DTO.PessoaJuridicaRequestDTO;
 import com.web2.movelcontrol.DTO.PessoaJuridicaResponseDTO;
-import com.web2.movelcontrol.DTO.UsuarioResponseDTO;
 import com.web2.movelcontrol.Exceptions.ErrorResponseDTO;
-import com.web2.movelcontrol.Model.Endereco;
 import com.web2.movelcontrol.Model.PessoaFisica;
-import com.web2.movelcontrol.Model.PessoaJuridica;
 import com.web2.movelcontrol.Service.PessoaJuridicaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,18 +17,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
+
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.html.parser.Entity;
-import java.util.Date;
 import java.util.List;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/pj")
@@ -117,18 +108,9 @@ public class PessoaJuridicaController {
             }
     )
     @GetMapping("/listar")
-    public List<EntityModel<PessoaJuridicaResponseDTO>> findAll() {
-        List<PessoaJuridica> pjs = service.findAll();
+    public ResponseEntity<List<EntityModel<PessoaJuridicaResponseDTO>>> findAll() {
 
-        List<EntityModel<PessoaJuridicaResponseDTO>> responseList = pjs.stream().map(pj -> {
-            PessoaJuridicaResponseDTO dto = DataMapper.parseObject(pj, PessoaJuridicaResponseDTO.class);
-            return EntityModel.of(dto,
-                    linkTo(methodOn(PessoaJuridicaController.class).findById(pj.getId())).withRel("BuscarPorId"),
-                    linkTo(methodOn(PessoaJuridicaController.class).findByNome(dto.getNome())).withRel("buscarPorNome")
-            );
-        }).toList();
-
-        return responseList;
+        return ResponseEntity.ok(service.findAll());
     }
 
     @Operation(
@@ -150,10 +132,9 @@ public class PessoaJuridicaController {
     )
     @PutMapping(value = "/atualizar/{id}"
             , consumes = MediaType.APPLICATION_JSON_VALUE)
-    public PessoaJuridica atualizarPessoaJuridica(@PathVariable Long id, @RequestBody PessoaJuridicaRequestDTO pjDTO) {
-        PessoaJuridica pessoaJuridica = DataMapper.parseObject(pjDTO, PessoaJuridica.class);
+    public ResponseEntity<PessoaJuridicaResponseDTO> atualizarPessoaJuridica(@PathVariable Long id, @RequestBody PessoaJuridicaRequestDTO pessoaJuridica) {
 
-        return service.update(id, pessoaJuridica);
+        return ResponseEntity.ok(service.update(id, pessoaJuridica));
     }
 
     @Operation(

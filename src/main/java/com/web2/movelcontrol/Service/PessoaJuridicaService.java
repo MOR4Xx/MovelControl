@@ -62,6 +62,7 @@ public class PessoaJuridicaService {
 
         logger.info("Buscando pessoa jurídica por nome: " + nome);
         List<PessoaJuridica> pessoasJuridicas = repository.findByNome(nome);
+
         List<EntityModel<PessoaJuridicaResponseDTO>> pessoasJuridicasDTO = pessoasJuridicas.stream().map(pj -> {
             PessoaJuridicaResponseDTO pjDTO = DataMapper.parseObject(pj, PessoaJuridicaResponseDTO.class);
             return EntityModel.of(pjDTO,
@@ -73,7 +74,7 @@ public class PessoaJuridicaService {
             );
         }).toList();
 
-        if (pessoasJuridicas.isEmpty()) {
+        if (pessoasJuridicasDTO.isEmpty()) {
             logger.warning("Nenhuma Pessoa Juridica encontrada com o nome: " + nome);
             throw new NotFoundException("Nenhuma Pessoa Juridica encontrada com o nome: " + nome);
         }
@@ -81,19 +82,27 @@ public class PessoaJuridicaService {
         return pessoasJuridicasDTO;
     }
 
-    public List<PessoaJuridica> findAll() {
+    public List<EntityModel<PessoaJuridicaResponseDTO>> findAll() {
         logger.info("Buscando todas as pessoas jurídicas");
         List<PessoaJuridica> pessoasJuridicas = repository.findAll();
 
-        if (pessoasJuridicas.isEmpty()) {
+        List<EntityModel<PessoaJuridicaResponseDTO>> pessoasJuridicasDTO = pessoasJuridicas.stream().map(pj ->{
+            PessoaJuridicaResponseDTO pjDTO = DataMapper.parseObject(pj, PessoaJuridicaResponseDTO.class);
+            return EntityModel.of(pjDTO,
+                    linkTo(methodOn(PessoaJuridicaController.class).findById(pj.getId())).withRel("busca por Id"),
+                    linkTo(methodOn(PessoaJuridicaController.class).findByNome(pjDTO.getNome())).withRel("busca por Nome")
+                    );
+        }).toList();
+
+        if (pessoasJuridicasDTO.isEmpty()) {
             logger.warning("Nenhuma Pessoa Juridica encontrada");
             throw new NotFoundException("Nenhuma Pessoa Juridica encontrada");
         }
 
-        return pessoasJuridicas;
+        return pessoasJuridicasDTO;
     }
 
-    public PessoaJuridica update(Long id, PessoaJuridica pessoaUpdate) {
+    public PessoaJuridicaResponseDTO update(Long id, PessoaJuridicaRequestDTO pessoaUpdate) {
         PessoaJuridica pessoaJuridica = repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Pessoa Juridica " + id));
 
@@ -114,7 +123,9 @@ public class PessoaJuridicaService {
             pessoaJuridica.setEndereco(endereco);
         }
 
-        return repository.save(pessoaJuridica);
+        repository.save(pessoaJuridica);
+
+        return DataMapper.parseObject(pessoaJuridica, PessoaJuridicaResponseDTO.class);
     }
 
     public void delete(Long id) {
