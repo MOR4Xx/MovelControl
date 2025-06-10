@@ -29,29 +29,32 @@ public class PessoaFisicaController {
         @Autowired
         PessoaFisicaService service;
 
-        @Operation(summary = "Cria Pessoa Jurídica", description = "Cria uma nova Pessoa Jurídica e retorna os dados da entidade criada.", responses = {
-                        @ApiResponse(responseCode = "201", description = "Pessoa Jurídica criada com sucesso.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PessoaFisicaResponseDTO.class))),
-                        @ApiResponse(responseCode = "400", description = "Requisição inválida devido a dados de entrada incorretos ou incompletos.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PessoaFisicaRequestDTO.class))),
-                        @ApiResponse(responseCode = "409", description = "Conflito. A Pessoa Fisica com o CPF fornecido já existe.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PessoaFisicaRequestDTO.class))),
-                        @ApiResponse(responseCode = "500", description = "Erro interno do servidor.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDTO.class)))
-        })
-        @PostMapping(value = "/criar", consumes = MediaType.APPLICATION_JSON_VALUE)
-        public ResponseEntity<PessoaFisicaResponseDTO> createPessoaFisica(
-                        @RequestBody @Valid PessoaFisicaRequestDTO pfDTO) {
-                PessoaFisica pf = new PessoaFisica();
-                pf.setNome(pfDTO.getNome());
-                pf.setTelefone(pfDTO.getTelefone());
-                pf.setCpf(pfDTO.getCpf());
-                pf.setEmail(pfDTO.getEmail());
-
-                Endereco endereco = new Endereco();
-                endereco.setCep(pfDTO.getEndereco().getCep());
-                endereco.setRua(pfDTO.getEndereco().getRua());
-                endereco.setBairro(pfDTO.getEndereco().getBairro());
-                endereco.setNumero(pfDTO.getEndereco().getNumero());
-                endereco.setComplemento(pfDTO.getEndereco().getComplemento());
-
-                pf.setEndereco(endereco);
+    @Operation(
+            summary = "Cria Pessoa Jurídica",
+            description = "Cria uma nova Pessoa Jurídica e retorna os dados da entidade criada.",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Pessoa Jurídica criada com sucesso.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = PessoaFisicaResponseDTO.class))
+                    ),
+                    @ApiResponse(responseCode = "400", description = "Requisição inválida devido a dados de entrada incorretos ou incompletos.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = PessoaFisicaRequestDTO.class))
+                    ),
+                    @ApiResponse(responseCode = "409", description = "Conflito. A Pessoa Fisica com o CPF fornecido já existe.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = PessoaFisicaRequestDTO.class))
+                    ),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class))
+                    )
+            }
+    )
+    @PostMapping(value = "/criar",
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PessoaFisicaResponseDTO> createPessoaFisica(@RequestBody @Valid PessoaFisicaRequestDTO pfDTO) {
+        PessoaFisica pf = DataMapper.parseObject(pfDTO, PessoaFisica.class);
 
                 service.create(pf);
 

@@ -11,15 +11,15 @@
     </parent>
     <groupId>com.web2</groupId>
     <artifactId>MovelControl</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0</version>
     <name>MovelControl</name>
-    <description>MovelControl</description>
+    <description>API de gerenciamento de estoque, pedidos e orçamentos de Marcenarias</description>
     <url />
     <licenses>
         <license />
     </licenses>
     <developers>
-        <developer />
+        <developer/>
     </developers>
     <scm>
         <connection />
