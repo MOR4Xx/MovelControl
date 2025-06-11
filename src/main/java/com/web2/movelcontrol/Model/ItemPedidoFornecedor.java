@@ -1,5 +1,7 @@
 package com.web2.movelcontrol.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -12,6 +14,7 @@ public class ItemPedidoFornecedor {
     @ManyToOne
     @MapsId("pedidoId")
     @JoinColumn(name = "pedido_id")
+    @JsonIgnore
     private PedidoFornecedor pedido;
 
     

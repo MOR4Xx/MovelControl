@@ -6,7 +6,6 @@ CREATE TABLE estoque
     unidade_medida     VARCHAR(10)  NOT NULL,
     preco_unitario DOUBLE NOT NULL,
     quantidade_estoque INT          NOT NULL,
-    pedido_id          INT NULL,
     CONSTRAINT pk_estoque PRIMARY KEY (id)
 );
 
@@ -94,8 +93,7 @@ ALTER TABLE pedido
 ALTER TABLE pessoa
     ADD CONSTRAINT uc_pessoa_identificador UNIQUE (identificador);
 
-ALTER TABLE estoque
-    ADD CONSTRAINT FK_ESTOQUE_ON_PEDIDO FOREIGN KEY (pedido_id) REFERENCES pedido_fornecedor (id);
+
 
 ALTER TABLE nota_fiscal
     ADD CONSTRAINT FK_NOTA_FISCAL_ON_PEDIDO FOREIGN KEY (pedido_id) REFERENCES pedido (id);
