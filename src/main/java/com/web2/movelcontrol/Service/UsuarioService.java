@@ -88,7 +88,7 @@ public class UsuarioService {
         List<EntityModel<UsuarioResponseDTO>> usuariosDTO = usuarios.stream().map(usuario -> {
             UsuarioResponseDTO usuarioDTO = DataMapper.parseObject(usuario, UsuarioResponseDTO.class);
             return EntityModel.of(usuarioDTO,
-                    linkTo(methodOn(UsuarioController.class).findById(usuario.getId())).withSelfRel()
+                    linkTo(methodOn(UsuarioController.class).findById(usuario.getId())).withRel("busca por id")
             );
         }).toList();
 
