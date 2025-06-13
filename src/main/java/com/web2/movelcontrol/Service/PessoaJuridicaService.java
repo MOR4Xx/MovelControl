@@ -25,6 +25,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 public class PessoaJuridicaService {
+
     @Autowired
     PessoaJuridicaRepository repository;
 
@@ -40,8 +41,9 @@ public class PessoaJuridicaService {
     }
 
     public EntityModel<PessoaJuridicaResponseDTO> findById(Long id) {
-        PessoaJuridicaResponseDTO pjDTO = DataMapper.parseObject(repository.findById(id).orElseThrow(() -> new NotFoundException("Pessoa Juridica " + id))
-                , PessoaJuridicaResponseDTO.class);
+        PessoaJuridicaResponseDTO pjDTO = DataMapper.parseObject(repository.findById(id)
+                        .orElseThrow(() -> new NotFoundException("Pessoa Juridica " + id)),
+                PessoaJuridicaResponseDTO.class);
 
         EntityModel<PessoaJuridicaResponseDTO> response = EntityModel.of(pjDTO,
                 linkTo(methodOn(PessoaJuridicaController.class).findByNome(pjDTO.getNome())).withRel("buscarPorNome"),

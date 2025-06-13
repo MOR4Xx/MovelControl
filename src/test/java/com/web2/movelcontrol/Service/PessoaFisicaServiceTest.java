@@ -1,5 +1,9 @@
 package com.web2.movelcontrol.Service;
 
+import com.web2.movelcontrol.DTO.DataMapper;
+import com.web2.movelcontrol.DTO.EnderecoRequestDTO;
+import com.web2.movelcontrol.DTO.PessoaFisicaRequestDTO;
+import com.web2.movelcontrol.DTO.PessoaFisicaResponseDTO;
 import com.web2.movelcontrol.Exceptions.NotFoundException;
 import com.web2.movelcontrol.Model.Endereco;
 import com.web2.movelcontrol.Model.PessoaFisica;
@@ -17,117 +21,138 @@ import static org.mockito.Mockito.*;
 
 class PessoaFisicaServiceTest {
 
-    // Mock do repositório, simula acesso ao banco de dados
     @Mock
     private PessoaFisicaRepository repository;
 
-    // Injeta o mock do repositório na classe de serviço que será testada
     @InjectMocks
     private PessoaFisicaService service;
 
-    // Objeto de pessoa física usado nos testes
     private PessoaFisica pessoaFisica;
+    private PessoaFisicaRequestDTO pessoaFisicaRequestDTO;
 
-    // Configuração executada antes de cada teste
     @BeforeEach
     void setUp() {
-        // Inicializa os mocks
         MockitoAnnotations.openMocks(this);
 
-        // Criação de um objeto PessoaFisica com dados de exemplo
+        Endereco endereco = new Endereco();
+        endereco.setCep("75700-000");
+        endereco.setRua("Rua A");
+        endereco.setBairro("Centro");
+        endereco.setNumero("100");
+        endereco.setComplemento("Apto 1");
+
         pessoaFisica = new PessoaFisica();
         pessoaFisica.setId(1L);
         pessoaFisica.setNome("João da Silva");
         pessoaFisica.setCpf("123.456.789-00");
         pessoaFisica.setEmail("joao@teste.com");
         pessoaFisica.setTelefone("(64)98888-7777");
-        pessoaFisica.setEndereco(new Endereco(1L, "Rua A", "Centro", "75700-000", "100", "Apto 1"));
+        pessoaFisica.setEndereco(endereco);
+
+        EnderecoRequestDTO enderecoRequestDTO = new EnderecoRequestDTO();
+        enderecoRequestDTO.setCep("75700-000");
+        enderecoRequestDTO.setRua("Rua A");
+        enderecoRequestDTO.setBairro("Centro");
+        enderecoRequestDTO.setNumero("100");
+        enderecoRequestDTO.setComplemento("Apto 1");
+
+        pessoaFisicaRequestDTO = new PessoaFisicaRequestDTO();
+        pessoaFisicaRequestDTO.setNome("João da Silva");
+        pessoaFisicaRequestDTO.setCpf("123.456.789-00");
+        pessoaFisicaRequestDTO.setEmail("joao@teste.com");
+        pessoaFisicaRequestDTO.setTelefone("(64)98888-7777");
+        pessoaFisicaRequestDTO.setEndereco(enderecoRequestDTO);
     }
 
-    // Teste do método create()
     @Test
-    void createPessoaFisica() {
-        // Simula que ao salvar, o repositório retorna a própria pessoa física
-        when(repository.save(pessoaFisica)).thenReturn(pessoaFisica);
+    void testCreatePessoaFisica() {
+        when(repository.save(any(PessoaFisica.class))).thenAnswer(invocation -> {
+            PessoaFisica saved = invocation.getArgument(0);
+            saved.setId(1L); // Simula o ID gerado ao salvar no banco
+            return saved;
+        });
 
-        // Chama o método que está sendo testado
-        PessoaFisica created = service.create(pessoaFisica);
+        PessoaFisicaResponseDTO responseDTO = service.create(pessoaFisicaRequestDTO);
 
-        // Verifica se o objeto retornado não é nulo e os dados estão corretos
-        assertNotNull(created);
-        assertEquals("João da Silva", created.getNome());
-        assertEquals("123.456.789-00", created.getCpf());
-
-        // Verifica se o método save do repositório foi chamado exatamente uma vez
-        verify(repository, times(1)).save(pessoaFisica);
+        assertNotNull(responseDTO);
+        assertEquals(pessoaFisicaRequestDTO.getNome(), responseDTO.getNome());
+        assertEquals(pessoaFisicaRequestDTO.getCpf(), responseDTO.getCpf());
+        assertEquals(pessoaFisicaRequestDTO.getEmail(), responseDTO.getEmail());
+        verify(repository, times(1)).save(any(PessoaFisica.class));
     }
 
-    // Teste do método findById() quando encontra a pessoa
     @Test
-    void findPessoaFisicaByIdExists() {
-        // Simula retorno do Optional com a pessoa quando busca pelo ID
+    void testFindByIdExists() {
         when(repository.findById(1L)).thenReturn(Optional.of(pessoaFisica));
 
-        // Chama o método que está sendo testado
-        PessoaFisica found = service.findById(1L);
+        var response = service.findById(1L);
 
-        // Valida se o objeto não é nulo e os dados estão corretos
-        assertNotNull(found);
-        assertEquals(1L, found.getId());
-
-        // Verifica se findById foi chamado uma vez com ID 1L
+        assertNotNull(response);
+        assertEquals(pessoaFisica.getNome(), response.getContent().getNome());
+        assertEquals(pessoaFisica.getCpf(), response.getContent().getCpf());
         verify(repository, times(1)).findById(1L);
     }
 
-    // Teste do método findById() quando não encontra a pessoa
     @Test
-    void findPessoaFisicaByIdNotExists() {
-        // Simula que o repositório retorna vazio
+    void testFindByIdNotExists() {
         when(repository.findById(2L)).thenReturn(Optional.empty());
 
-        // Verifica se o método lança NotFoundException ao não encontrar o ID
         assertThrows(NotFoundException.class, () -> service.findById(2L));
 
-        // Verifica se findById foi chamado corretamente
         verify(repository, times(1)).findById(2L);
     }
 
-    // Teste do método update()
     @Test
-    void updatePessoaFisica() {
-        // Dados atualizados que serão passados
-        PessoaFisica updatedData = new PessoaFisica();
-        updatedData.setNome("João Atualizado");
-        updatedData.setEmail("joaoatualizado@teste.com");
-
-        // Simula encontrar a pessoa existente
+    void testUpdatePessoaFisica() {
         when(repository.findById(1L)).thenReturn(Optional.of(pessoaFisica));
-        // Simula o salvamento da pessoa atualizada
         when(repository.save(any(PessoaFisica.class))).thenReturn(pessoaFisica);
 
-        // Chama o método que está sendo testado
-        PessoaFisica updated = service.update(1L, updatedData);
+        PessoaFisicaRequestDTO updatedRequestDTO = new PessoaFisicaRequestDTO();
+        updatedRequestDTO.setNome("João Alterado");
+        updatedRequestDTO.setEmail("joao.alterado@teste.com");
+        updatedRequestDTO.setCpf("123.456.789-00");
+        updatedRequestDTO.setTelefone("(64)90000-0000");
 
-        // Verificações dos dados atualizados
-        assertNotNull(updated);
-        assertEquals("João Atualizado", updated.getNome());
-        assertEquals("joaoatualizado@teste.com", updated.getEmail());
+        PessoaFisicaResponseDTO responseDTO = service.update(1L, updatedRequestDTO);
 
-        // Verifica se os métodos foram chamados corretamente
+        assertNotNull(responseDTO);
+        assertEquals("João Alterado", responseDTO.getNome());
+        assertEquals("joao.alterado@teste.com", responseDTO.getEmail());
         verify(repository, times(1)).findById(1L);
         verify(repository, times(1)).save(any(PessoaFisica.class));
     }
 
-    // Teste do método delete()
     @Test
-    void deletePessoaFisica() {
-        // Simula que o método deleteById não faz nada (void)
+    void testUpdatePessoaFisicaNotFound() {
+        when(repository.findById(2L)).thenReturn(Optional.empty());
+
+        PessoaFisicaRequestDTO updatedRequestDTO = new PessoaFisicaRequestDTO();
+        updatedRequestDTO.setNome("João Alterado");
+
+        assertThrows(NotFoundException.class, () -> service.update(2L, updatedRequestDTO));
+
+        verify(repository, times(1)).findById(2L);
+        verify(repository, times(0)).save(any(PessoaFisica.class));
+    }
+
+    @Test
+    void testDeletePessoaFisica() {
+        when(repository.findById(1L)).thenReturn(Optional.of(pessoaFisica));
         doNothing().when(repository).deleteById(1L);
 
-        // Executa o método delete
         service.delete(1L);
 
-        // Verifica se deleteById foi chamado uma vez
+        verify(repository, times(1)).findById(1L);
         verify(repository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void testDeletePessoaFisicaNotFound() {
+        when(repository.findById(2L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> service.delete(2L));
+
+        verify(repository, times(1)).findById(2L);
+        verify(repository, times(0)).deleteById(anyLong());
     }
 }

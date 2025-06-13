@@ -18,10 +18,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.List;
 
 @RestController
@@ -57,11 +59,8 @@ public class PessoaFisicaController {
     @PostMapping(value = "/criar",
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PessoaFisicaResponseDTO> createPessoaFisica(@RequestBody @Valid PessoaFisicaRequestDTO pfDTO) {
-        PessoaFisica pf = DataMapper.parseObject(pfDTO, PessoaFisica.class);
 
-        service.create(pf);
-
-        return ResponseEntity.ok(DataMapper.parseObject(pf, PessoaFisicaResponseDTO.class));
+        return ResponseEntity.ok(service.create(pfDTO));
     }
 
     @Operation(
@@ -81,10 +80,9 @@ public class PessoaFisicaController {
             }
     )
     @GetMapping("/{id}")
-    public ResponseEntity<PessoaFisicaResponseDTO> findById(@PathVariable Long id) {
-        PessoaFisica pessoaFisica = service.findById(id);
+    public ResponseEntity<EntityModel<PessoaFisicaResponseDTO>> findById(@PathVariable Long id) {
 
-        return ResponseEntity.ok(DataMapper.parseObject(pessoaFisica, PessoaFisicaResponseDTO.class));
+        return ResponseEntity.ok(service.findById(id));
     }
 
     @Operation(
@@ -92,15 +90,18 @@ public class PessoaFisicaController {
             description = "Retorna todas as Pessoas Fisicas registrada",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Pessoas Fisicas encontrado"),
-                    @ApiResponse(responseCode = "404", description = "Pessoas Fisicas não encontrado"),
-                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+                    @ApiResponse(responseCode = "404", description = "Pessoas Fisicas não encontrado",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class))),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class)))
             }
     )
     @GetMapping("/listar")
-    public ResponseEntity<List<PessoaFisicaResponseDTO>> findAll() {
-        List<PessoaFisica> pf = service.findAll();
+    public ResponseEntity<List<EntityModel<PessoaFisicaResponseDTO>>> findAll() {
 
-        return ResponseEntity.ok(DataMapper.parseListObjects(pf, PessoaFisicaResponseDTO.class));
+        return ResponseEntity.ok(service.findAll());
     }
 
     @Operation(
@@ -108,15 +109,19 @@ public class PessoaFisicaController {
             description = "Retorna os dados de uma Pessoa Fisica específico pelo Nome",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Pessoa Fisica encontrado"),
-                    @ApiResponse(responseCode = "404", description = "Pessoa Fisica não encontrado"),
-                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+                    @ApiResponse(responseCode = "404", description = "Pessoa Fisica não encontrado",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class))),
+                    @ApiResponse(responseCode = "500", description = "Erro interno do servidor.",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class)))
             }
     )
     @GetMapping("/nome/{nome}")
-    public List<PessoaFisica> findByNome(@PathVariable String nome) {
-        return service.findByNome(nome);
-    }
+    public ResponseEntity<List<EntityModel<PessoaFisicaResponseDTO>>> findByNome(@PathVariable String nome) {
 
+        return ResponseEntity.ok(service.findByNome(nome));
+    }
 
     @Operation(
             summary = "Atualizar Pessoa Jurídica",
@@ -129,21 +134,28 @@ public class PessoaFisicaController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "Pessoa Jurídica atualizada com sucesso",
                             content = @Content(schema = @Schema(implementation = PessoaFisicaResponseDTO.class))),
-                    @ApiResponse(responseCode = "404", description = "Pessoa Jurídica não encontrada"),
-                    @ApiResponse(responseCode = "400", description = "Dados inválidos")
+                    @ApiResponse(responseCode = "404", description = "Pessoa Jurídica não encontrada",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class))),
+                    @ApiResponse(responseCode = "400", description = "Dados inválidos",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class)))
             }
     )
     @PutMapping(value = "/atualizar/{id}"
             , consumes = MediaType.APPLICATION_JSON_VALUE)
-    public PessoaFisica atualizarPessoaFisica(@PathVariable Long id, @RequestBody PessoaFisicaRequestDTO pfAntigo) {
-        PessoaFisica pessoaFisica = DataMapper.parseObject(pfAntigo, PessoaFisica.class);
+    public ResponseEntity<PessoaFisicaResponseDTO> atualizarPessoaFisica(@PathVariable Long id, @RequestBody PessoaFisicaRequestDTO pf) {
 
-        return service.update(id, pessoaFisica);
+        return ResponseEntity.ok(service.update(id, pf));
     }
 
-
+    @Operation(summary = "Deletar Pessoa Fisica", description = "Remove uma Pessoa Fisica do sistema pelo ID", responses = {
+            @ApiResponse(responseCode = "204", description = "Pessoa Fisica deletada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Pessoa Fisica não encontrada")
+    })
     @DeleteMapping(value = "/deletar/{id}")
-    public void deletePessoaFIsica(@PathVariable Long id) {
+    public PessoaFisica deletePessoaFisica(@PathVariable Long id) {
         service.delete(id);
+        return null;
     }
 }

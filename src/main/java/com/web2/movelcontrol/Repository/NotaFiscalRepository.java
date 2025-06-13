@@ -9,4 +9,8 @@ import org.springframework.stereotype.Repository;
 public interface NotaFiscalRepository extends JpaRepository<NotaFiscal, Long> {
 	
 	boolean existsByPedido_Id(Long pedidoId); //utilizado para saber se há pedido linkado a nota fiscal impedindo de deletar.
+
+	NotaFiscal findByPedido_Id(Long pedidoId);
+
+	NotaFiscal findByCodigo(String numero);
 }
