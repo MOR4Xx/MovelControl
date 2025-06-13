@@ -1,10 +1,17 @@
 package com.web2.movelcontrol.Service;
 
+import com.web2.movelcontrol.Controller.PedidoFornecedorController;
 import com.web2.movelcontrol.DTO.*;
 import com.web2.movelcontrol.Model.*;
 import com.web2.movelcontrol.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,8 +28,6 @@ public class PedidoFornecedorService {
 
         @Autowired
         private FornecedorRepository fornecedorRepository;
-
-
 
         public PedidoFornecedor create(PedidoFornecedorRequestDTO dto) {
                 PedidoFornecedor pedido = new PedidoFornecedor();
@@ -105,10 +110,10 @@ public class PedidoFornecedorService {
                 pedidoRepository.deleteById(id);
         }
 
-        public List<PedidoFornecedorResponseDTO> findAll() {
+        public CollectionModel<EntityModel<PedidoFornecedorResponseDTO>> findAll() {
                 List<PedidoFornecedor> pedidos = pedidoRepository.findAll();
 
-                return pedidos.stream().map(pedido -> {
+                List<EntityModel<PedidoFornecedorResponseDTO>> pedidosComLinks = pedidos.stream().map(pedido -> {
                         String nomeFornecedor = pedido.getFornecedor() != null ? pedido.getFornecedor().getNome()
                                         : null;
 
@@ -120,13 +125,32 @@ public class PedidoFornecedorService {
                                                         ipf.getQuantidade()))
                                         .toList();
 
-                        return new PedidoFornecedorResponseDTO(
+                        PedidoFornecedorResponseDTO dto = new PedidoFornecedorResponseDTO(
                                         pedido.getId(),
                                         pedido.getStatus(),
                                         pedido.getDataPedido(),
                                         nomeFornecedor,
                                         itens);
+
+                        EntityModel<PedidoFornecedorResponseDTO> model = EntityModel.of(dto);
+
+                        // Link para buscar por ID
+                        model.add(linkTo(methodOn(PedidoFornecedorController.class)
+                                        .buscarPedidoPorId(pedido.getId()))
+                                        .withSelfRel());
+
+                        // Link para buscar todos os pedidos do fornecedor
+                        if (pedido.getFornecedor() != null) {
+                                model.add(linkTo(methodOn(PedidoFornecedorController.class)
+                                                .buscarPedidosPorFornecedor(pedido.getFornecedor().getId()))
+                                                .withRel("pedidos-do-fornecedor"));
+                        }
+
+                        return model;
                 }).toList();
+
+                return CollectionModel.of(pedidosComLinks,
+                                linkTo(methodOn(PedidoFornecedorController.class).listarTodosPedidos()).withSelfRel());
         }
 
         public PedidoFornecedorResponseDTO findById(Long id) {
@@ -150,5 +174,33 @@ public class PedidoFornecedorService {
                                 pedido.getDataPedido(),
                                 nomeFornecedor,
                                 itens);
+        }
+
+        public List<PedidoFornecedorResponseDTO> findByFornecedorId(Long fornecedorId) {
+                List<PedidoFornecedor> pedidos = pedidoRepository.findByFornecedorId(fornecedorId);
+
+                if (pedidos.isEmpty()) {
+                        throw new RuntimeException("Nenhum pedido encontrado para o fornecedor com ID " + fornecedorId);
+                }
+
+                return pedidos.stream().map(pedido -> {
+                        String nomeFornecedor = pedido.getFornecedor() != null ? pedido.getFornecedor().getNome()
+                                        : null;
+
+                        List<ItemPedidoFornecedorResponseDTO> itens = pedido.getItens_pedido().stream()
+                                        .map(ipf -> new ItemPedidoFornecedorResponseDTO(
+                                                        ipf.getItem().getId(),
+                                                        ipf.getItem().getNome(),
+                                                        ipf.getItem().getDescricao(),
+                                                        ipf.getQuantidade()))
+                                        .toList();
+
+                        return new PedidoFornecedorResponseDTO(
+                                        pedido.getId(),
+                                        pedido.getStatus(),
+                                        pedido.getDataPedido(),
+                                        nomeFornecedor,
+                                        itens);
+                }).toList();
         }
 }

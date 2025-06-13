@@ -10,9 +10,13 @@ import com.web2.movelcontrol.Repository.FornecedorRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 class FornecedorServiceTest {
@@ -127,15 +131,28 @@ class FornecedorServiceTest {
         assertThrows(NotFoundException.class, () -> service.findById(1L));
     }
 
-    @Test
-    void testFindAll() {
-        Fornecedor fornecedor = createFornecedor(1L);
-        when(repository.findAll()).thenReturn(List.of(fornecedor));
+    
+@Test
+void testFindAll() {
+    Fornecedor fornecedor = createFornecedor(1L);
+    when(repository.findAll()).thenReturn(List.of(fornecedor));
 
-        List<FornecedorResponseDTO> result = service.findAll();
+    CollectionModel<EntityModel<FornecedorResponseDTO>> result = service.findAll();
 
-        assertEquals(1, result.size());
-        assertEquals(fornecedor.getNome(), result.get(0).getNome());
-        verify(repository).findAll();
-    }
+    assertNotNull(result);
+    assertEquals(1, result.getContent().size());
+
+    EntityModel<FornecedorResponseDTO> model = result.getContent().iterator().next();
+    FornecedorResponseDTO dto = model.getContent();
+
+    assertNotNull(dto);
+    assertEquals(fornecedor.getNome(), dto.getNome());
+
+    // Verifica se o link HATEOAS foi adicionado corretamente
+    assertTrue(model.hasLink("pedidos-fornecedor"));
+    assertEquals("/pFornecedor/buscar/fornecedor/1", 
+        model.getLink("pedidos-fornecedor").get().getHref());
+
+    verify(repository).findAll();
+}
 }

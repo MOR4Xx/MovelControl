@@ -1,9 +1,11 @@
 package com.web2.movelcontrol.Controller;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.web2.movelcontrol.DTO.FornecedorRequestDTO;
@@ -24,8 +26,8 @@ public class FornecedorController {
 
     @Operation(summary = "Cria um novo fornecedor")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Fornecedor criado com sucesso"),
-        @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos")
+            @ApiResponse(responseCode = "200", description = "Fornecedor criado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos")
     })
     @PostMapping(value = "/criar", consumes = MediaType.APPLICATION_JSON_VALUE)
     public FornecedorResponseDTO createFornecedor(@RequestBody @Valid FornecedorRequestDTO fornecedor) {
@@ -34,8 +36,8 @@ public class FornecedorController {
 
     @Operation(summary = "Deleta um fornecedor pelo ID")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Fornecedor deletado com sucesso"),
-        @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado")
+            @ApiResponse(responseCode = "204", description = "Fornecedor deletado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado")
     })
     @DeleteMapping(value = "/deletar/{id}")
     public void deleteFornecedor(@PathVariable Long id) {
@@ -44,19 +46,20 @@ public class FornecedorController {
 
     @Operation(summary = "Atualiza um fornecedor pelo ID")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Fornecedor atualizado com sucesso"),
-        @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos"),
-        @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado")
+            @ApiResponse(responseCode = "200", description = "Fornecedor atualizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos"),
+            @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado")
     })
     @PutMapping("/atualizar/{id}")
-    public FornecedorResponseDTO atualizarFornecedor(@PathVariable Long id, @Valid @RequestBody FornecedorRequestDTO pf){
+    public FornecedorResponseDTO atualizarFornecedor(@PathVariable Long id,
+            @Valid @RequestBody FornecedorRequestDTO pf) {
         return service.update(id, pf);
     }
 
     @Operation(summary = "Busca um fornecedor pelo ID")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Fornecedor encontrado"),
-        @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado")
+            @ApiResponse(responseCode = "200", description = "Fornecedor encontrado"),
+            @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado")
     })
     @GetMapping("/buscar/{id}")
     public FornecedorResponseDTO buscarFornecedor(@PathVariable Long id) {
@@ -65,10 +68,10 @@ public class FornecedorController {
 
     @Operation(summary = "Busca todos os fornecedores")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista de fornecedores retornada com sucesso")
+            @ApiResponse(responseCode = "200", description = "Lista de fornecedores retornada com sucesso")
     })
     @GetMapping("/buscartudo")
-    public List<FornecedorResponseDTO> buscarFornecedorTudo() {
-        return service.findAll();
+    public ResponseEntity<CollectionModel<EntityModel<FornecedorResponseDTO>>> listarTodosComLinks() {
+        return ResponseEntity.ok(service.findAll());
     }
 }

@@ -2,6 +2,7 @@ package com.web2.movelcontrol.Service;
 
 import com.web2.movelcontrol.DTO.ItemPedidoFornecedorRequestDTO;
 import com.web2.movelcontrol.DTO.PedidoFornecedorRequestDTO;
+import com.web2.movelcontrol.DTO.PedidoFornecedorResponseDTO;
 import com.web2.movelcontrol.Model.*;
 import com.web2.movelcontrol.Repository.FornecedorRepository;
 import com.web2.movelcontrol.Repository.ItemRepository;
@@ -9,6 +10,8 @@ import com.web2.movelcontrol.Repository.PedidoFornecedorRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 
 import java.util.*;
 
@@ -64,15 +67,29 @@ class PedidoFornecedorServiceTest {
         return item;
     }
 
-    private PedidoFornecedor criarPedidoMock() {
-        PedidoFornecedor pedido = new PedidoFornecedor();
-        pedido.setId(1L);
-        pedido.setDataPedido(new Date());
-        pedido.setStatus("EM_ANDAMENTO");
-        pedido.setFornecedor(criarFornecedor());
-        pedido.setItens_pedido(new ArrayList<>());
-        return pedido;
-    }
+   private PedidoFornecedor criarPedidoMock() {
+    PedidoFornecedor pedido = new PedidoFornecedor();
+    pedido.setId(1L);
+    pedido.setDataPedido(new Date());
+    pedido.setStatus("EM_ANDAMENTO");
+
+    Fornecedor fornecedor = new Fornecedor();
+    fornecedor.setId(1L);
+    fornecedor.setNome("Fornecedor A");
+    pedido.setFornecedor(fornecedor);
+
+    Item item = new Item();
+    item.setId(1L);
+    item.setNome("Parafuso");
+    item.setDescricao("Parafuso 5mm");
+
+    ItemPedidoFornecedor ipf = new ItemPedidoFornecedor();
+    ipf.setItem(item);
+    ipf.setQuantidade(5);
+
+    pedido.setItens_pedido(List.of(ipf));
+    return pedido;
+}
 
     @Test
     void testCreate_ComSucesso() {
@@ -212,11 +229,38 @@ void testFindAll() {
 
     when(pedidoRepository.findAll()).thenReturn(List.of(pedido));
 
-    var lista = service.findAll();
+    CollectionModel<EntityModel<PedidoFornecedorResponseDTO>> collection = service.findAll();
 
-    assertEquals(1, lista.size());
-    assertEquals("Fornecedor A", lista.get(0).getNomeFornecedor());
-    assertEquals("Parafuso", lista.get(0).getItens().get(0).getNome());
+    assertNotNull(collection);
+    assertEquals(1, collection.getContent().size());
+
+    PedidoFornecedorResponseDTO dto = collection.getContent().iterator().next().getContent();
+    assertNotNull(dto);
+    assertEquals("Fornecedor A", dto.getNomeFornecedor());
+    assertEquals("Parafuso", dto.getItens().get(0).getNome());
 }
+
+
+@Test
+void testFindByFornecedorId_ComSucesso() {
+    PedidoFornecedor pedido = criarPedidoMock();
+    when(pedidoRepository.findByFornecedorId(1L)).thenReturn(List.of(pedido));
+
+    List<PedidoFornecedorResponseDTO> result = service.findByFornecedorId(1L);
+
+    assertFalse(result.isEmpty(), "A lista não deveria estar vazia");
+
+    PedidoFornecedorResponseDTO dto = result.get(0);
+    assertEquals("Fornecedor A", dto.getNomeFornecedor());
+    assertEquals("Parafuso", dto.getItens().get(0).getNome());
+}
+
+    @Test
+    void testFindByFornecedorId_NenhumEncontrado_DeveLancarExcecao() {
+        when(pedidoRepository.findByFornecedorId(1L)).thenReturn(Collections.emptyList());
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> service.findByFornecedorId(1L));
+        assertEquals("Nenhum pedido encontrado para o fornecedor com ID 1", ex.getMessage());
+    }
 
 }

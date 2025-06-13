@@ -4,8 +4,11 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
+import com.web2.movelcontrol.Controller.PedidoFornecedorController;
 import com.web2.movelcontrol.DTO.EnderecoResponseDTO;
 import com.web2.movelcontrol.DTO.FornecedorRequestDTO;
 import com.web2.movelcontrol.DTO.FornecedorResponseDTO;
@@ -13,6 +16,9 @@ import com.web2.movelcontrol.Exceptions.NotFoundException;
 import com.web2.movelcontrol.Model.Endereco;
 import com.web2.movelcontrol.Model.Fornecedor;
 import com.web2.movelcontrol.Repository.FornecedorRepository;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Service
 public class FornecedorService {
@@ -68,11 +74,23 @@ public class FornecedorService {
                 .orElseThrow(() -> new NotFoundException("Fornecedor não encontrado com ID: " + id)));
     }
 
-    public List<FornecedorResponseDTO> findAll() {
-        return repository.findAll().stream()
-                .map(this::toDTO)
-                .toList();
-    }
+   public CollectionModel<EntityModel<FornecedorResponseDTO>> findAll() {
+    List<Fornecedor> fornecedores = repository.findAll();
+
+    List<EntityModel<FornecedorResponseDTO>> fornecedoresComLinks = fornecedores.stream().map(f -> {
+        FornecedorResponseDTO dto = toDTO(f); 
+
+        EntityModel<FornecedorResponseDTO> model = EntityModel.of(dto);
+
+        model.add(linkTo(methodOn(PedidoFornecedorController.class)
+            .buscarPedidosPorFornecedor(f.getId()))
+            .withRel("pedidos-fornecedor"));
+
+        return model;
+    }).toList();
+
+    return CollectionModel.of(fornecedoresComLinks);
+}
 
     // Conversões
 

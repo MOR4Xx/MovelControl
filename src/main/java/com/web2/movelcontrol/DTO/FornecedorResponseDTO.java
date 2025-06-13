@@ -24,6 +24,8 @@ public class FornecedorResponseDTO {
     private EnderecoResponseDTO endereco;
 
 
+    
+
     public Long getId() {
         return id;
     }
