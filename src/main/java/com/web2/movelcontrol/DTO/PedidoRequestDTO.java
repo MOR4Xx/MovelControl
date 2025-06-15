@@ -1,3 +1,7 @@
+/*
+ * Autor: Artur Duarte
+ * Responsavel: Artur Duarte
+ */
 package com.web2.movelcontrol.DTO;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,19 +14,19 @@ import java.util.Objects;
 @Schema(name = "PedidoRequestDTO", description = "DTO para criar ou atualizar um Pedido")
 public class PedidoRequestDTO {
 	
-	@Schema(description = "Data do pedido. Se não fornecida, o serviço pode definir a data atual.", example = "2025-08-03")
+	@Schema(required = true, description = "Data do pedido. Se não fornecida, o serviço pode definir a data atual.", example = "2025-08-03")
 	private Date dataPedido; // No model de Pedido o campo é data_pedido
 	
-	@Schema(description = "Status do pedido", example = "AGUARDANDO_PAGAMENTO", requiredMode = Schema.RequiredMode.REQUIRED)
+	@Schema(required = true, description = "Status do pedido", example = "AGUARDANDO_PAGAMENTO", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotBlank(message = "O status não pode ser vazio.")
-	@Size(max = 50, message = "O status deve ter no máximo 50 caracteres.") // Conforme entidade Pedido
+	@Size(max = 50, message = "O status deve ter no máximo 50 caracteres.")
 	private String status;
 	
 	@Schema(description = "Descrição adicional para o pedido", example = "Pedido urgente, cliente VIP.")
-	@Size(max = 100, message = "A descrição deve ter no máximo 100 caracteres.") // Conforme entidade Pedido
+	@Size(max = 100, message = "A descrição deve ter no máximo 100 caracteres.")
 	private String descricao;
 	
-	@Schema(description = "ID do Orçamento vinculado a este pedido.", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
+	@Schema(required = true, description = "ID do Orçamento vinculado a este pedido.", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull(message = "O ID do orçamento não pode ser nulo.")
 	private Long orcamentoId;
 	

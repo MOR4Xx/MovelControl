@@ -1,3 +1,7 @@
+/*
+ * Autor: Artur Duarte
+ * Responsavel: Artur Duarte
+ */
 package com.web2.movelcontrol.Controller;
 
 import com.web2.movelcontrol.DTO.PedidoRequestDTO;
@@ -78,7 +82,6 @@ public class PedidoController {
             responses = {
                     @ApiResponse(description = "Lista de Pedidos Obtida com Sucesso", responseCode = "200",
                             content = @Content(mediaType = "application/json",
-                                    // Como é uma lista, usamos arraySchema
                                     array = @io.swagger.v3.oas.annotations.media.ArraySchema(schema = @Schema(implementation = PedidoResponseDTO.class))
                             )
                     ),
@@ -140,8 +143,7 @@ public class PedidoController {
         }
         PedidoResponseDTO dto = DataMapper.parseObject(pedido, PedidoResponseDTO.class);
         
-        // O ModelMapper dentro do DataMapper pode não mapear data_pedido para dataPedido automaticamente.
-        // Se isso acontecer, sete manualmente:
+        // O ModelMapper dentro do DataMapper pode não mapear data_pedido para dataPedido automaticamente, metodo plano b.
         if (dto.getDataPedido() == null && pedido.getData_pedido() != null) {
             dto.setDataPedido(pedido.getData_pedido());
         }

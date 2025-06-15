@@ -1,4 +1,8 @@
 package com.web2.movelcontrol.DTO;
+/*
+ * Autor: Artur Duarte
+ * Responsavel: Artur Duarte
+ */
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Date;

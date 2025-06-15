@@ -1,4 +1,8 @@
 package com.web2.movelcontrol.Service;
+/*
+ * Autor: Artur Duarte
+ * Responsavel: Artur Duarte
+ */
 
 import com.web2.movelcontrol.Controller.OrcamentoController;
 import com.web2.movelcontrol.Controller.PedidoController;
