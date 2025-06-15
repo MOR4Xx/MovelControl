@@ -3,9 +3,10 @@ package com.web2.movelcontrol.DTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Date;
 import java.util.Objects;
+import org.springframework.hateoas.RepresentationModel;
 
 @Schema(name = "PedidoResponseDTO", description = "DTO para representar um Pedido na resposta da API")
-public class PedidoResponseDTO {
+public class PedidoResponseDTO extends RepresentationModel<PedidoResponseDTO> {
 	
 	@Schema(description = "ID do Pedido", example = "1")
 	private Long id;
@@ -24,7 +25,7 @@ public class PedidoResponseDTO {
 	private Long orcamentoId;
 	
 	
-	public PedidoResponseDTO() {
+	public PedidoResponseDTO()  {
 	}
 	
 	// Getters e Setters

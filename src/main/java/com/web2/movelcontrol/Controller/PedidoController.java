@@ -43,10 +43,9 @@ public class PedidoController {
                     @ApiResponse(description = "Erro Interno do Servidor", responseCode = "500", content = @Content)
             }
     )
-    public ResponseEntity<PedidoResponseDTO> criarPedido(@RequestBody @Valid PedidoRequestDTO pedidoDTO) {
-        Pedido pedidoSalvo = pedidoService.criarPedido(pedidoDTO);
-        PedidoResponseDTO responseDTO = mapToPedidoResponseDTO(pedidoSalvo);
-        return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
+    public ResponseEntity<PedidoResponseDTO> criarPedido(@RequestBody PedidoRequestDTO dto) {
+        PedidoResponseDTO criado = pedidoService.criarPedido(dto);
+        return ResponseEntity.ok(criado);
     }
     
     
@@ -67,9 +66,8 @@ public class PedidoController {
             }
     )
     public ResponseEntity<PedidoResponseDTO> buscarPedidoPorId(@PathVariable Long id) {
-        Pedido pedido = pedidoService.buscarPedidoPorId(id);
-        PedidoResponseDTO responseDTO = mapToPedidoResponseDTO(pedido);
-        return ResponseEntity.ok(responseDTO);
+        PedidoResponseDTO encontrado = pedidoService.buscarPedidoPorId(id);
+        return ResponseEntity.ok(encontrado);
     }
     
     
@@ -89,11 +87,8 @@ public class PedidoController {
             }
     )
     public ResponseEntity<List<PedidoResponseDTO>> listarTodosPedidos() {
-        List<Pedido> pedidos = pedidoService.listarTodosPedidos();
-        List<PedidoResponseDTO> responseDTOs = pedidos.stream()
-                .map(this::mapToPedidoResponseDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(responseDTOs);
+        List<PedidoResponseDTO> lista = pedidoService.listarTodosPedidos();
+        return ResponseEntity.ok(lista);
     }
     
   
@@ -113,10 +108,11 @@ public class PedidoController {
                     @ApiResponse(description = "Erro Interno do Servidor", responseCode = "500", content = @Content)
             }
     )
-    public ResponseEntity<PedidoResponseDTO> atualizarPedido(@PathVariable Long id, @RequestBody @Valid PedidoRequestDTO pedidoDTO) {
-        Pedido pedidoAtualizado = pedidoService.atualizarPedido(id, pedidoDTO);
-        PedidoResponseDTO responseDTO = mapToPedidoResponseDTO(pedidoAtualizado);
-        return ResponseEntity.ok(responseDTO);
+    public ResponseEntity<PedidoResponseDTO> atualizarPedido(
+            @PathVariable Long id,
+            @RequestBody PedidoRequestDTO dto) {
+        PedidoResponseDTO atualizado = pedidoService.atualizarPedido(id, dto);
+        return ResponseEntity.ok(atualizado);
     }
     
    
