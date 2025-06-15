@@ -182,6 +182,7 @@ class PedidoServiceTest {
 		verify(pedidoRepository).findById(99L);
 	}
 	
+	
 	@Test
 	void testDeletarPedido_Sucesso() {
 		Pedido existing = criarPedidoEntidade(1L);
