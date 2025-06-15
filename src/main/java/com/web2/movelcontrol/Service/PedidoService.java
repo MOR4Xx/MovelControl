@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Date;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @Service
@@ -31,6 +32,22 @@ public class PedidoService {
     
     @Transactional
     public Pedido criarPedido(PedidoRequestDTO pedidoDTO) {
+        
+        // Verificar se o orçamento já está em uso
+        if (pedidoRepository.existsByOrcamentoId(pedidoDTO.getOrcamentoId())) {
+            // Buscar o pedido existente para fornecer mais detalhes no erro
+             Optional<Pedido> pedidoExistenteComOrcamento = pedidoRepository.findByOrcamentoId(pedidoDTO.getOrcamentoId());
+             String mensagemErro = "O Orçamento com ID " + pedidoDTO.getOrcamentoId() + " já está vinculado";
+             if (pedidoExistenteComOrcamento.isPresent()) {
+                 mensagemErro += " ao Pedido ID " + pedidoExistenteComOrcamento.get().getId();
+             }
+          
+            throw new ConflictException(
+                    "O Orçamento com ID " + pedidoDTO.getOrcamentoId() +
+                            " já está vinculado a outro Pedido. Um orçamento só pode ser utilizado em um único pedido."
+            );
+        }
+        
         Orcamento orcamentoExistente = orcamentoRepository.findById(pedidoDTO.getOrcamentoId())
                 .orElseThrow(() -> new NotFoundException("Orçamento com ID " + pedidoDTO.getOrcamentoId() + " não encontrado. Não é possível criar o Pedido."));
         

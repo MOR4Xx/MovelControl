@@ -78,7 +78,7 @@ public class PedidoResponseDTO {
 				Objects.equals(dataPedido, that.dataPedido) &&
 				Objects.equals(status, that.status) &&
 				Objects.equals(descricao, that.descricao) &&
-				Objects.equals(orcamentoId, that.orcamentoId); // Adicionar orcamento se usar o objeto completo
+				Objects.equals(orcamentoId, that.orcamentoId);
 	}
 	
 	@Override

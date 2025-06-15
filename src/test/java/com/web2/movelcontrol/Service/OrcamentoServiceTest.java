@@ -4,125 +4,225 @@ import com.web2.movelcontrol.DTO.OrcamentoRequestDTO;
 import com.web2.movelcontrol.DTO.ItemOrcamentoRequestDTO;
 import com.web2.movelcontrol.Model.Orcamento;
 import com.web2.movelcontrol.Model.Item;
-import com.web2.movelcontrol.Model.OrcamentoItem;
 import com.web2.movelcontrol.Model.Pessoa;
+import com.web2.movelcontrol.Model.PessoaFisica;
 import com.web2.movelcontrol.Repository.OrcamentoRepository;
 import com.web2.movelcontrol.Repository.ItemRepository;
 import com.web2.movelcontrol.Repository.PessoaRepository;
-
+import com.web2.movelcontrol.Exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.*;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*; // Para os asserts
-import static org.mockito.Mockito.*; // Para funcionalidades do Mockito como when, verify
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class) // Habilita a integração do Mockito com JUnit 5
-public class OrcamentoServiceTest {
+class OrcamentoServiceTest {
 	
-	@Mock // Cria um mock para OrcamentoRepository
+	@InjectMocks
+	private OrcamentoService service;
+	
+	@Mock
 	private OrcamentoRepository orcamentoRepository;
 	
-	@Mock // Cria um mock para ItemRepository
+	@Mock
 	private ItemRepository itemRepository;
 	
-	@Mock // Cria um mock para PessoaRepository
+	@Mock
 	private PessoaRepository pessoaRepository;
 	
-	@InjectMocks // Cria uma instância de OrcamentoService e injeta os mocks acima
-	private OrcamentoService orcamentoService;
-	
-	// metodos de testes
-	
-	private OrcamentoRequestDTO requestDTO;
-	private Pessoa clienteMock;
-	private Item itemMock;
-	
-	@BeforeEach // Este método será executado ANTES de cada @Test
+	@BeforeEach
 	void setUp() {
-		// Configuração comum para os testes
-		requestDTO = new OrcamentoRequestDTO();
-		requestDTO.setClienteId(1L);
-		requestDTO.setStatus("PENDENTE_TESTE");
-		requestDTO.setDataCriacao(new Date());
+		MockitoAnnotations.openMocks(this);
+	}
+	
+	private OrcamentoRequestDTO criarDtoComUmItem() {
+		OrcamentoRequestDTO dto = new OrcamentoRequestDTO();
+		dto.setDataCriacao(new Date());
+		dto.setStatus("EM_ANDAMENTO");
+		dto.setClienteId(1L);
 		
-		ItemOrcamentoRequestDTO itemDTO = new ItemOrcamentoRequestDTO(10L, 2); // itemId 10, quantidade 2
-		Set<ItemOrcamentoRequestDTO> itensDTO = new HashSet<>();
-		itensDTO.add(itemDTO);
-		requestDTO.setItens(itensDTO);
+		ItemOrcamentoRequestDTO io = new ItemOrcamentoRequestDTO();
+		io.setItemId(1L);
+		io.setQuantity(2);
+		dto.getItens().add(io);
 		
-		// Mocks de entidades que os repositórios retornariam
-		clienteMock = mock(Pessoa.class); // Usando mock(Pessoa.class) em vez de um subtipo específico por enquanto
-		when(clienteMock.getId()).thenReturn(1L); // Garante que o cliente mockado tenha o ID esperado
+		return dto;
+	}
+	
+	private Pessoa criarPessoa(Long id) {
+		Pessoa p = new PessoaFisica();
+		p.setId(id);
+		return p;
+	}
+	
+	private Item criarItem(Long id, double preco) {
+		Item i = new Item();
+		i.setId(id);
+		i.setPrecoUnitario(preco);
+		return i;
+	}
+	
+	//TESTES DE CRIAÇÃO
+	@Test
+	void testCriarOrcamento_Sucesso() {
+		OrcamentoRequestDTO dto = criarDtoComUmItem();
+		Pessoa cliente = criarPessoa(dto.getClienteId());
+		Item item = criarItem(1L, 10.0);
 		
-		itemMock = new Item();
-		itemMock.setId(10L);
-		itemMock.setNome("Madeira");
-		itemMock.setPrecoUnitario(500.00);
-		itemMock.setDescricao("Madeira top");
-		itemMock.setUnidadeMedida("UN");
-		itemMock.setQuantidade_estoque(10);
+		when(pessoaRepository.findById(1L)).thenReturn(Optional.of(cliente));
+		when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
+		// Simula atribuição de ID ao salvar
+		when(orcamentoRepository.save(any(Orcamento.class)))
+				.thenAnswer(inv -> {
+					Orcamento o = inv.getArgument(0);
+					o.setId(1L);
+					return o;
+				});
+		
+		Orcamento resultado = service.criarOrcamento(dto);
+		
+		assertNotNull(resultado.getId());
+		assertEquals("EM_ANDAMENTO", resultado.getStatus());
+		assertEquals(cliente, resultado.getCliente());
+		// Um único OrcamentoItem
+		assertEquals(1, resultado.getItensOrcamento().size());
+		// Valor total = quantidade (2) * preço unitário (10.0)
+		assertEquals(20.0, resultado.getValorTotal());
+		verify(pessoaRepository).findById(1L);
+		verify(itemRepository).findById(1L);
+		verify(orcamentoRepository).save(any(Orcamento.class));
 	}
 	
 	@Test
-	@DisplayName("Deve criar um orçamento com sucesso") // Nome descritivo para o teste
-	void testCriarOrcamento_ComDadosValidos_DeveRetornarOrcamentoSalvo() {
-		// ------------ ARRANGE (Organizar/Preparar) ------------
+	void testCriarOrcamento_ClienteNaoEncontrado() {
+		OrcamentoRequestDTO dto = criarDtoComUmItem();
 		
-		//Configurar o mock do pessoaRepository para retornar nosso clienteMock quando findById for chamado com o ID do DTO
-		when(pessoaRepository.findById(requestDTO.getClienteId())).thenReturn(Optional.of(clienteMock));
+		when(pessoaRepository.findById(1L)).thenReturn(Optional.empty());
 		
-		//Configurar o mock do itemRepository para retornar nosso itemMock para cada item no DTO
-		for (ItemOrcamentoRequestDTO itemReqDTO : requestDTO.getItens()) {
-			when(itemRepository.findById(itemReqDTO.getItemId())).thenReturn(Optional.of(itemMock));
-		}
+		assertThrows(NotFoundException.class, () -> service.criarOrcamento(dto));
 		
-		//Configurar o mock do orcamentoRepository para simula o comportamento de salvar e retornar a entidade salva
-		when(orcamentoRepository.save(any(Orcamento.class))).thenAnswer(invocation -> {
-			Orcamento orcamentoSalvo = invocation.getArgument(0);
-			return orcamentoSalvo;
-		});
+		verify(pessoaRepository).findById(1L);
+		verifyNoInteractions(itemRepository, orcamentoRepository);
+	}
+	
+	@Test
+	void testCriarOrcamento_ItemNaoEncontrado() {
+		OrcamentoRequestDTO dto = criarDtoComUmItem();
+		Pessoa cliente = criarPessoa(dto.getClienteId());
 		
+		when(pessoaRepository.findById(1L)).thenReturn(Optional.of(cliente));
+		when(itemRepository.findById(1L)).thenReturn(Optional.empty());
 		
-		// ------------ ACT (Agir) ------------
-		// Chamamos o método do serviço que queremos testar
-		Orcamento orcamentoCriado = orcamentoService.criarOrcamento(requestDTO);
+		assertThrows(NotFoundException.class, () -> service.criarOrcamento(dto));
 		
+		verify(pessoaRepository).findById(1L);
+		verify(itemRepository).findById(1L);
+		verify(orcamentoRepository, never()).save(any());
+	}
+	
+	//TESTES DE BUSCA
+	@Test
+	void testBuscarOrcamentoPorId_Sucesso() {
+		Orcamento o = new Orcamento();
+		o.setId(1L);
+		when(orcamentoRepository.findById(1L)).thenReturn(Optional.of(o));
 		
-		// ------------ ASSERT (Verificar) ------------
-		// Verificamos se o resultado é o esperado
+		// quando
+		Orcamento resultado = service.buscarOrcamentoPorId(1L);
 		
-		assertNotNull(orcamentoCriado, "O orçamento criado não deveria ser nulo.");
-		assertEquals(requestDTO.getStatus(), orcamentoCriado.getStatus(), "O status do orçamento deveria ser o mesmo do DTO.");
-		assertNotNull(orcamentoCriado.getDataCriacao(), "A data de criação do orçamento não deveria ser nula.");
-		assertNotNull(orcamentoCriado.getCliente(), "O cliente no orçamento não deveria ser nulo.");
-		assertEquals(clienteMock.getId(), orcamentoCriado.getCliente().getId(), "O ID do cliente no orçamento deveria ser o esperado.");
+		// então
+		assertNotNull(resultado);
+		assertEquals(1L, resultado.getId());
+		verify(orcamentoRepository).findById(1L);
+	}
+	
+	@Test
+	void testBuscarOrcamentoPorId_NaoEncontrado() {
+		when(orcamentoRepository.findById(99L)).thenReturn(Optional.empty());
 		
-		assertNotNull(orcamentoCriado.getItensOrcamento(), "A lista de itens do orçamento não deveria ser nula.");
-		assertEquals(1, orcamentoCriado.getItensOrcamento().size(), "Deveria haver 1 item no orçamento.");
+		assertThrows(NotFoundException.class,
+				() -> service.buscarOrcamentoPorId(99L)
+		);
+		verify(orcamentoRepository).findById(99L);
+	}
+	
+	@Test
+	void testListarTodosOrcamentos() {
+		Orcamento o1 = new Orcamento(); o1.setId(1L);
+		Orcamento o2 = new Orcamento(); o2.setId(2L);
 		
-		// Verificando o primeiro item do orçamento
-		OrcamentoItem primeiroItemOrcamento = orcamentoCriado.getItensOrcamento().iterator().next();
-		assertNotNull(primeiroItemOrcamento.getItem(), "O item dentro de OrcamentoItem não deveria ser nulo.");
-		assertEquals(itemMock.getId(), primeiroItemOrcamento.getItem().getId(), "O ID do item deveria ser o esperado.");
-		assertEquals(2, primeiroItemOrcamento.getQuantity(), "A quantidade do item deveria ser 2.");
+		when(orcamentoRepository.findAll()).thenReturn(List.of(o1, o2));
 		
-		// Verificar o valor total calculado
-		// 500.00 * 2 = 1000.00
-		assertEquals(1000.00, orcamentoCriado.getValorTotal(), 0.001, "O valor total do orçamento deveria ser 1000.00.");
+		List<Orcamento> all = service.listarTodosOrcamentos();
 		
-		// Verifica se os métodos dos repositórios mockados foram chamados
-		verify(pessoaRepository, times(1)).findById(requestDTO.getClienteId()); // Verifica se findById foi chamado 1 vez com o clienteId
-		verify(itemRepository, times(requestDTO.getItens().size())).findById(anyLong()); // Verifica para cada item
-		verify(orcamentoRepository, times(1)).save(any(Orcamento.class)); // Verifica se save foi chamado 1 vez
+		assertEquals(2, all.size());
+		assertTrue(all.containsAll(List.of(o1, o2)));
+		verify(orcamentoRepository).findAll();
+	}
+	
+	
+	//TESTES DE ATUALIZAÇÃO
+	@Test
+	void testAtualizarOrcamento_Sucesso() {
+		// dado: orçamento existente
+		Orcamento existente = new Orcamento();
+		existente.setId(1L);
+		existente.setStatus("ANTIGO");
+		existente.setItensOrcamento(new HashSet<>()); // sem itens
+		when(orcamentoRepository.findById(1L)).thenReturn(Optional.of(existente));
+		when(orcamentoRepository.save(any(Orcamento.class))).thenAnswer(inv -> inv.getArgument(0));
+		
+		// req DTO só muda o status
+		OrcamentoRequestDTO dto = new OrcamentoRequestDTO();
+		dto.setStatus("ATUALIZADO");
+		dto.setClienteId(null);      // sem troca de cliente
+		dto.setItens(null);          // sem mexer em itens
+		
+		// quando
+		Orcamento atualizado = service.atualizarOrcamento(1L, dto);
+		
+		// então
+		assertEquals("ATUALIZADO", atualizado.getStatus());
+		verify(orcamentoRepository).findById(1L);
+		verify(orcamentoRepository).save(existente);
+	}
+	
+	@Test
+	void testAtualizarOrcamento_NaoEncontrado() {
+		when(orcamentoRepository.findById(99L)).thenReturn(Optional.empty());
+		
+		assertThrows(NotFoundException.class,
+				() -> service.atualizarOrcamento(99L, new OrcamentoRequestDTO())
+		);
+		verify(orcamentoRepository).findById(99L);
+	}
+	
+	@Test
+	void testDeletarOrcamento_Sucesso() {
+		when(orcamentoRepository.existsById(1L)).thenReturn(true);
+		
+		service.deletarOrcamento(1L);
+		
+		verify(orcamentoRepository).existsById(1L);
+		verify(orcamentoRepository).deleteById(1L);
+	}
+	
+	@Test
+	void testDeletarOrcamento_NaoEncontrado() {
+		when(orcamentoRepository.existsById(42L)).thenReturn(false);
+		
+		assertThrows(NotFoundException.class,
+				() -> service.deletarOrcamento(42L)
+		);
+		verify(orcamentoRepository).existsById(42L);
+		verify(orcamentoRepository, never()).deleteById(any());
 	}
 }
+
+
+
+
+

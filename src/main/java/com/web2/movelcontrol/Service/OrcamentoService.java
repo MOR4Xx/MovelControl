@@ -37,29 +37,33 @@ public class OrcamentoService {
     private PessoaRepository pessoaRepository;
     
     @Transactional
-    
     public Orcamento criarOrcamento(OrcamentoRequestDTO orcamentoDTO) {
+        
+        logger.info(
+                String.format("Iniciando criação de orçamento para Cliente ID: %d com %d item(ns).",
+                        orcamentoDTO.getClienteId(),
+                        orcamentoDTO.getItens() != null ? orcamentoDTO.getItens().size() : 0
+                )
+        );
         Orcamento novoOrcamento = new Orcamento();
         
         if (orcamentoDTO.getDataCriacao() != null) {
             novoOrcamento.setDataCriacao(orcamentoDTO.getDataCriacao());
         }
         
-        // Se vier algo no DTO, ele será usado sobrescrevendo o construtor.
         if (orcamentoDTO.getStatus() != null && !orcamentoDTO.getStatus().isEmpty()) {
             novoOrcamento.setStatus(orcamentoDTO.getStatus());
         }
         
-        //DTO já confere se cliente é nulo
         Pessoa cliente = pessoaRepository.findById(orcamentoDTO.getClienteId())
-                .orElseThrow(() -> new NotFoundException("Cliente com ID " + orcamentoDTO.getClienteId() + " não encontrado."));
+                .orElseThrow(() -> new NotFoundException("Recurso não encontrado: Cliente com ID " + orcamentoDTO.getClienteId()));
         novoOrcamento.setCliente(cliente);
         
         Set<OrcamentoItem> itensProcessados = new HashSet<>();
         if (orcamentoDTO.getItens() != null && !orcamentoDTO.getItens().isEmpty()) {
             for (ItemOrcamentoRequestDTO itemDto : orcamentoDTO.getItens()) {
                 Item itemDoBanco = itemRepository.findById(itemDto.getItemId())
-                        .orElseThrow(() -> new NotFoundException("Item com ID " + itemDto.getItemId() + " não encontrado."));
+                        .orElseThrow(() -> new NotFoundException("Recurso não encontrado: Item com ID " + itemDto.getItemId()));
                 
                 OrcamentoItem novoOrcamentoItem = new OrcamentoItem();
                 novoOrcamentoItem.setOrcamento(novoOrcamento);
@@ -71,8 +75,19 @@ public class OrcamentoService {
         novoOrcamento.setItensOrcamento(itensProcessados);
         
         novoOrcamento.calcularValorTotalOrcamento();
-        logger.info("Criando um novo orçamento a partir de DTO, com padrões da entidade.");
-        return orcamentoRepository.save(novoOrcamento);
+        
+        Orcamento orcamentoSalvo = orcamentoRepository.save(novoOrcamento);
+        
+        logger.info(
+                String.format("Orçamento ID: %d criado com sucesso para o Cliente ID: %d. Valor Total: R$ %.2f",
+                        orcamentoSalvo.getId(),
+                        orcamentoSalvo.getCliente().getId(),
+                        orcamentoSalvo.getValorTotal()
+                )
+        );
+        
+        
+        return orcamentoSalvo;
     }
     
     public Orcamento buscarOrcamentoPorId(Long id) {
@@ -112,11 +127,11 @@ public class OrcamentoService {
         }
         
         // Mapeia os OrcamentoItems existentes pelo ID do Item para fácil acesso
-        Map<Long, OrcamentoItem> itensExistentesNoMapa = new HashSet<>(orcamentoExistente.getItensOrcamento()) // Crie uma cópia para evitar ConcurrentModificationException ao modificar a original
+        Map<Long, OrcamentoItem> itensExistentesNoMapa = new HashSet<>(orcamentoExistente.getItensOrcamento())
                 .stream()
                 .collect(Collectors.toMap(
-                        oi -> oi.getItem().getId(), // Chave do mapa é o Item ID
-                        Function.identity()         // Valor do mapa é o próprio OrcamentoItem
+                        oi -> oi.getItem().getId(),
+                        Function.identity()
                 ));
         
         // Cria uma nova coleção para os itens que devem permanecer/ser adicionados
@@ -127,13 +142,11 @@ public class OrcamentoService {
                 OrcamentoItem itemExistente = itensExistentesNoMapa.get(itemDto.getItemId());
                 
                 if (itemExistente != null) {
-                    // Item já existe no orçamento, apenas atualiza a quantidade
-                    logger.fine("Atualizando quantidade do item ID " + itemDto.getItemId() + " para " + itemDto.getQuantity());
+                    //O item já existe. Apenas atualiza a quantidade.
                     itemExistente.setQuantity(itemDto.getQuantity());
-                    itensAtualizadosDaRequisicao.add(itemExistente); // Adiciona o item existente
+                    itensAtualizadosDaRequisicao.add(itemExistente); // Re-adiciona o item atualizado
                 } else {
-                    // Item é novo para este orçamento, cria e adiciona
-                    logger.fine("Adicionando novo item ID " + itemDto.getItemId() + " com quantidade " + itemDto.getQuantity());
+                    //O item é novo. Busca no banco e cria a nova associação.
                     Item itemDoBanco = itemRepository.findById(itemDto.getItemId())
                             .orElseThrow(() -> new NotFoundException("Item com ID " + itemDto.getItemId() + " não encontrado."));
                     
@@ -142,7 +155,7 @@ public class OrcamentoService {
                     novoOrcamentoItem.setItem(itemDoBanco);
                     novoOrcamentoItem.setQuantity(itemDto.getQuantity());
                     
-                    itensAtualizadosDaRequisicao.add(novoOrcamentoItem);
+                    itensAtualizadosDaRequisicao.add(novoOrcamentoItem); // Adiciona o novo item
                 }
             }
         }
