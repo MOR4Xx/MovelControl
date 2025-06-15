@@ -4,9 +4,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Date;
 import java.util.Set;
 import java.util.Objects;
+import org.springframework.hateoas.RepresentationModel;
 
 @Schema(name = "OrcamentoResponseDTO", description = "DTO para representar um orçamento na resposta da API")
-public class OrcamentoResponseDTO {
+public class OrcamentoResponseDTO  extends RepresentationModel<OrcamentoResponseDTO> {
+	
 	
 	@Schema(description = "ID do orçamento", example = "1")
 	private Long id;

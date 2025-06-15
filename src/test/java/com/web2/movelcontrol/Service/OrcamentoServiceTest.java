@@ -1,20 +1,29 @@
 package com.web2.movelcontrol.Service;
 
 import com.web2.movelcontrol.DTO.OrcamentoRequestDTO;
+import com.web2.movelcontrol.DTO.OrcamentoResponseDTO;
 import com.web2.movelcontrol.DTO.ItemOrcamentoRequestDTO;
-import com.web2.movelcontrol.Model.Orcamento;
 import com.web2.movelcontrol.Model.Item;
-import com.web2.movelcontrol.Model.Pessoa;
 import com.web2.movelcontrol.Model.PessoaFisica;
+import com.web2.movelcontrol.Model.Orcamento;
 import com.web2.movelcontrol.Repository.OrcamentoRepository;
 import com.web2.movelcontrol.Repository.ItemRepository;
 import com.web2.movelcontrol.Repository.PessoaRepository;
 import com.web2.movelcontrol.Exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Optional;
+import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -52,8 +61,8 @@ class OrcamentoServiceTest {
 		return dto;
 	}
 	
-	private Pessoa criarPessoa(Long id) {
-		Pessoa p = new PessoaFisica();
+	private PessoaFisica criarPessoa(Long id) {
+		PessoaFisica p = new PessoaFisica();
 		p.setId(id);
 		return p;
 	}
@@ -65,16 +74,14 @@ class OrcamentoServiceTest {
 		return i;
 	}
 	
-	//TESTES DE CRIAÇÃO
 	@Test
 	void testCriarOrcamento_Sucesso() {
 		OrcamentoRequestDTO dto = criarDtoComUmItem();
-		Pessoa cliente = criarPessoa(dto.getClienteId());
+		PessoaFisica cliente = criarPessoa(dto.getClienteId());
 		Item item = criarItem(1L, 10.0);
 		
 		when(pessoaRepository.findById(1L)).thenReturn(Optional.of(cliente));
 		when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
-		// Simula atribuição de ID ao salvar
 		when(orcamentoRepository.save(any(Orcamento.class)))
 				.thenAnswer(inv -> {
 					Orcamento o = inv.getArgument(0);
@@ -82,15 +89,14 @@ class OrcamentoServiceTest {
 					return o;
 				});
 		
-		Orcamento resultado = service.criarOrcamento(dto);
+		OrcamentoResponseDTO resultado = service.criarOrcamento(dto);
 		
 		assertNotNull(resultado.getId());
 		assertEquals("EM_ANDAMENTO", resultado.getStatus());
-		assertEquals(cliente, resultado.getCliente());
-		// Um único OrcamentoItem
-		assertEquals(1, resultado.getItensOrcamento().size());
-		// Valor total = quantidade (2) * preço unitário (10.0)
+		assertEquals(cliente.getId(), resultado.getCliente().getId());
+		assertEquals(1, resultado.getItens().size());
 		assertEquals(20.0, resultado.getValorTotal());
+		
 		verify(pessoaRepository).findById(1L);
 		verify(itemRepository).findById(1L);
 		verify(orcamentoRepository).save(any(Orcamento.class));
@@ -111,7 +117,7 @@ class OrcamentoServiceTest {
 	@Test
 	void testCriarOrcamento_ItemNaoEncontrado() {
 		OrcamentoRequestDTO dto = criarDtoComUmItem();
-		Pessoa cliente = criarPessoa(dto.getClienteId());
+		PessoaFisica cliente = criarPessoa(dto.getClienteId());
 		
 		when(pessoaRepository.findById(1L)).thenReturn(Optional.of(cliente));
 		when(itemRepository.findById(1L)).thenReturn(Optional.empty());
@@ -123,17 +129,13 @@ class OrcamentoServiceTest {
 		verify(orcamentoRepository, never()).save(any());
 	}
 	
-	//TESTES DE BUSCA
 	@Test
 	void testBuscarOrcamentoPorId_Sucesso() {
-		Orcamento o = new Orcamento();
-		o.setId(1L);
-		when(orcamentoRepository.findById(1L)).thenReturn(Optional.of(o));
+		Orcamento ent = new Orcamento(); ent.setId(1L); ent.calcularValorTotalOrcamento();
+		when(orcamentoRepository.findById(1L)).thenReturn(Optional.of(ent));
 		
-		// quando
-		Orcamento resultado = service.buscarOrcamentoPorId(1L);
+		OrcamentoResponseDTO resultado = service.buscarOrcamentoPorId(1L);
 		
-		// então
 		assertNotNull(resultado);
 		assertEquals(1L, resultado.getId());
 		verify(orcamentoRepository).findById(1L);
@@ -151,41 +153,30 @@ class OrcamentoServiceTest {
 	
 	@Test
 	void testListarTodosOrcamentos() {
-		Orcamento o1 = new Orcamento(); o1.setId(1L);
-		Orcamento o2 = new Orcamento(); o2.setId(2L);
+		Orcamento o1 = new Orcamento(); o1.setId(1L); o1.calcularValorTotalOrcamento();
+		Orcamento o2 = new Orcamento(); o2.setId(2L); o2.calcularValorTotalOrcamento();
 		
 		when(orcamentoRepository.findAll()).thenReturn(List.of(o1, o2));
 		
-		List<Orcamento> all = service.listarTodosOrcamentos();
+		List<OrcamentoResponseDTO> all = service.listarTodosOrcamentos();
 		
 		assertEquals(2, all.size());
-		assertTrue(all.containsAll(List.of(o1, o2)));
+		assertTrue(all.stream().anyMatch(d -> d.getId().equals(1L)));
+		assertTrue(all.stream().anyMatch(d -> d.getId().equals(2L)));
 		verify(orcamentoRepository).findAll();
 	}
 	
-	
-	//TESTES DE ATUALIZAÇÃO
 	@Test
 	void testAtualizarOrcamento_Sucesso() {
-		// dado: orçamento existente
-		Orcamento existente = new Orcamento();
-		existente.setId(1L);
-		existente.setStatus("ANTIGO");
-		existente.setItensOrcamento(new HashSet<>()); // sem itens
+		Orcamento existente = new Orcamento(); existente.setId(1L); existente.calcularValorTotalOrcamento();
 		when(orcamentoRepository.findById(1L)).thenReturn(Optional.of(existente));
 		when(orcamentoRepository.save(any(Orcamento.class))).thenAnswer(inv -> inv.getArgument(0));
 		
-		// req DTO só muda o status
 		OrcamentoRequestDTO dto = new OrcamentoRequestDTO();
 		dto.setStatus("ATUALIZADO");
-		dto.setClienteId(null);      // sem troca de cliente
-		dto.setItens(null);          // sem mexer em itens
 		
-		// quando
-		Orcamento atualizado = service.atualizarOrcamento(1L, dto);
-		
-		// então
-		assertEquals("ATUALIZADO", atualizado.getStatus());
+		OrcamentoResponseDTO updated = service.atualizarOrcamento(1L, dto);
+		assertEquals("ATUALIZADO", updated.getStatus());
 		verify(orcamentoRepository).findById(1L);
 		verify(orcamentoRepository).save(existente);
 	}
@@ -221,8 +212,3 @@ class OrcamentoServiceTest {
 		verify(orcamentoRepository, never()).deleteById(any());
 	}
 }
-
-
-
-
-
