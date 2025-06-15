@@ -1,107 +1,116 @@
 package com.web2.movelcontrol.Service;
+/*
+ * Autor: Artur Duarte
+ * Responsavel: Artur Duarte
+ */
 
+import com.web2.movelcontrol.Controller.OrcamentoController;
+import com.web2.movelcontrol.Controller.PedidoController;
 import com.web2.movelcontrol.DTO.PedidoRequestDTO;
+import com.web2.movelcontrol.DTO.PedidoResponseDTO;
+import com.web2.movelcontrol.Exceptions.NotFoundException;
 import com.web2.movelcontrol.Model.Pedido;
 import com.web2.movelcontrol.Model.Orcamento;
 import com.web2.movelcontrol.Repository.PedidoRepository;
 import com.web2.movelcontrol.Repository.OrcamentoRepository;
-import com.web2.movelcontrol.Repository.NotaFiscalRepository;
-import com.web2.movelcontrol.Exceptions.NotFoundException;
-import com.web2.movelcontrol.Exceptions.ConflictException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
-import java.util.Date;
-import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 public class PedidoService {
     
-    private Logger logger = Logger.getLogger(PedidoService.class.getName());
+    private final PedidoRepository pedidoRepository;
+    private final OrcamentoRepository orcamentoRepository;
     
-    @Autowired
-    private PedidoRepository pedidoRepository;
-    
-    @Autowired
-    private OrcamentoRepository orcamentoRepository;
-    
-    @Autowired // Injetar o NotaFiscalRepository
-    private NotaFiscalRepository notaFiscalRepository;
+    public PedidoService(PedidoRepository pedidoRepo,
+                         OrcamentoRepository orcRepo) {
+        this.pedidoRepository = pedidoRepo;
+        this.orcamentoRepository = orcRepo;
+    }
     
     @Transactional
-    public Pedido criarPedido(PedidoRequestDTO pedidoDTO) {
-        Orcamento orcamentoExistente = orcamentoRepository.findById(pedidoDTO.getOrcamentoId())
-                .orElseThrow(() -> new NotFoundException("Orçamento com ID " + pedidoDTO.getOrcamentoId() + " não encontrado. Não é possível criar o Pedido."));
+    public PedidoResponseDTO criarPedido(PedidoRequestDTO dto) {
+        Orcamento orçamento = orcamentoRepository.findById(dto.getOrcamentoId())
+                .orElseThrow(() -> new NotFoundException("Orçamento não encontrado: " + dto.getOrcamentoId()));
         
-        Pedido novoPedido = new Pedido();
+        Pedido novo = new Pedido();
+        novo.setData_pedido(dto.getDataPedido());
+        novo.setStatus(dto.getStatus());
+        novo.setDescricao(dto.getDescricao());
+        novo.setOrcamento(orçamento);
         
-        if (pedidoDTO.getDataPedido() == null) {
-            novoPedido.setData_pedido(new Date());
-        } else {
-            novoPedido.setData_pedido(pedidoDTO.getDataPedido());
-        }
-        novoPedido.setStatus(pedidoDTO.getStatus());
-        if (pedidoDTO.getDescricao() != null) {
-            novoPedido.setDescricao(pedidoDTO.getDescricao());
-        }
-        novoPedido.setOrcamento(orcamentoExistente);
-        
-        logger.info("Criando um novo pedido a partir de DTO.");
-        return pedidoRepository.save(novoPedido);
+        Pedido salvo = pedidoRepository.save(novo);
+        return toResponseDTO(salvo);
     }
     
-    public Pedido buscarPedidoPorId(Long id) {
-        logger.info("Buscando pedido com ID: " + id);
-        return pedidoRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Pedido não encontrado com ID: " + id));
+    public PedidoResponseDTO buscarPedidoPorId(Long id) {
+        Pedido p = pedidoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Pedido não encontrado: " + id));
+        return toResponseDTO(p);
     }
     
-    public List<Pedido> listarTodosPedidos() {
-        logger.info("Listando todos os pedidos.");
-        return pedidoRepository.findAll();
+    public List<PedidoResponseDTO> listarTodosPedidos() {
+        return pedidoRepository.findAll()
+                .stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
     }
     
-    public Pedido atualizarPedido(Long id, PedidoRequestDTO pedidoDTO) {
-        logger.info("Atualizando pedido com ID: " + id + " a partir de DTO.");
-        Pedido pedidoExistente = pedidoRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Pedido não encontrado com ID: " + id + ", não foi possível atualizar."));
+    @Transactional
+    public PedidoResponseDTO atualizarPedido(Long id, PedidoRequestDTO dto) {
+        Pedido existente = pedidoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Pedido não encontrado: " + id));
         
-        // Atualiza os campos permitidos
-        if (pedidoDTO.getDataPedido() != null) {
-            pedidoExistente.setData_pedido(pedidoDTO.getDataPedido()); // Atenção ao nome do campo na entidade
-        }
-        if (pedidoDTO.getStatus() != null && !pedidoDTO.getStatus().isEmpty()) {
-            pedidoExistente.setStatus(pedidoDTO.getStatus());
-        }
-        if (pedidoDTO.getDescricao() != null) {
-            pedidoExistente.setDescricao(pedidoDTO.getDescricao());
+        existente.setData_pedido(dto.getDataPedido());
+        existente.setStatus(dto.getStatus());
+        existente.setDescricao(dto.getDescricao());
+        
+        if (!existente.getOrcamento().getId().equals(dto.getOrcamentoId())) {
+            Orcamento novoOrc = orcamentoRepository.findById(dto.getOrcamentoId())
+                    .orElseThrow(() -> new NotFoundException("Orçamento não encontrado: " + dto.getOrcamentoId()));
+            existente.setOrcamento(novoOrc);
         }
         
-       
-        if (pedidoDTO.getOrcamentoId() != null &&
-                (pedidoExistente.getOrcamento() == null || !pedidoExistente.getOrcamento().getId().equals(pedidoDTO.getOrcamentoId()))) {
-            Orcamento novoOrcamento = orcamentoRepository.findById(pedidoDTO.getOrcamentoId())
-                    .orElseThrow(() -> new NotFoundException("Novo Orçamento com ID " + pedidoDTO.getOrcamentoId() + " não encontrado."));
-            pedidoExistente.setOrcamento(novoOrcamento);
-        }
-     
-        return pedidoRepository.save(pedidoExistente);
+        Pedido salvo = pedidoRepository.save(existente);
+        return toResponseDTO(salvo);
     }
     
     @Transactional
     public void deletarPedido(Long id) {
-        logger.info("Tentando deletar pedido com ID: " + id);
-        Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Pedido não encontrado com ID: " + id + ", não foi possível deletar."));
-        
-        // Escolhendo a abordagem `existsByPedido_Id`:
-        boolean notaFiscalExistente = notaFiscalRepository.existsByPedido_Id(id); // Supondo que você adicionou este método ao NotaFiscalRepository
-        if (notaFiscalExistente) {
-            throw new ConflictException("Não é possível deletar o Pedido com ID " + id + " pois existe uma Nota Fiscal (ID: " + id + ") vinculada.");
+        if (!pedidoRepository.existsById(id)) {
+            throw new NotFoundException("Pedido não encontrado: " + id);
         }
+        pedidoRepository.deleteById(id);
+    }
+    
+    // --- Mapeamento manual para DTO + HATEOAS ---
+    private PedidoResponseDTO toResponseDTO(Pedido p) {
+        PedidoResponseDTO dto = new PedidoResponseDTO();
+        dto.setId(p.getId());
+        dto.setDataPedido(p.getData_pedido());
+        dto.setStatus(p.getStatus());
+        dto.setDescricao(p.getDescricao());
+        dto.setOrcamentoId(p.getOrcamento().getId());
         
-        pedidoRepository.delete(pedido);
-        logger.info("Pedido com ID: " + id + " deletado com sucesso.");
+        // self-link
+        dto.add(linkTo(methodOn(PedidoController.class)
+                .buscarPedidoPorId(p.getId()))
+                .withSelfRel());
+        // coleção
+        dto.add(linkTo(methodOn(PedidoController.class)
+                .listarTodosPedidos())
+                .withRel("pedidos"));
+        // link para o orçamento associado
+        dto.add(linkTo(methodOn(OrcamentoController.class)
+                .buscarOrcamentoPorId(p.getOrcamento().getId()))
+                .withRel("orcamento"));
+        
+        return dto;
     }
 }

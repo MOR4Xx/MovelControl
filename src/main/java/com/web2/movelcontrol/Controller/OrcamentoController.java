@@ -1,13 +1,12 @@
+/*
+ * Autor: Artur Duarte
+ * Responsavel: Artur Duarte
+ */
+
 package com.web2.movelcontrol.Controller;
 
 import com.web2.movelcontrol.DTO.OrcamentoRequestDTO;
 import com.web2.movelcontrol.DTO.OrcamentoResponseDTO;
-import com.web2.movelcontrol.DTO.ClienteResponseDTO;
-import com.web2.movelcontrol.DTO.ItemOrcamentoResponseDTO;
-import com.web2.movelcontrol.DTO.DataMapper;
-import com.web2.movelcontrol.Model.Orcamento;
-import com.web2.movelcontrol.Model.PessoaFisica;
-import com.web2.movelcontrol.Model.PessoaJuridica;
 import com.web2.movelcontrol.Service.OrcamentoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,31 +14,32 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/orcamentos")
-@Tag(name = "Orçamentos", description = "Endpoints para gerenciar Orçamentos")
+@Tag(name = "Orçamentos", description = "API de orçamentos com HATEOAS habilitado")
 public class OrcamentoController {
     
-    @Autowired
-    private OrcamentoService orcamentoService;
+    private final OrcamentoService orcamentoService;
+    
+    public OrcamentoController(OrcamentoService orcamentoService) {
+        this.orcamentoService = orcamentoService;
+    }
     
     
     @PostMapping
-    @Operation(summary = "Cria um novo orçamento", // Resumo da operação
+    @Operation(summary = "Cria um novo orçamento",
             description = "Este endpoint permite a criação de um novo orçamento no sistema. É necessário fornecer os detalhes do orçamento, incluindo o ID do cliente e os itens desejados com suas quantidades.", // Descrição mais detalhada
-            tags = {"Orçamentos"}, // Reafirma a tag, útil se tiver múltiplas
+            tags = {"Orçamentos"},
             responses = {
-                    @ApiResponse(description = "Orçamento Criado com Sucesso", responseCode = "201", // Descrição e código HTTP para sucesso
-                            content = @Content(mediaType = "application/json", // Tipo de mídia da resposta
-                                    schema = @Schema(implementation = OrcamentoResponseDTO.class) // Schema do DTO de resposta
+                    @ApiResponse(description = "Orçamento Criado com Sucesso", responseCode = "201",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = OrcamentoResponseDTO.class)
                             )
                     ),
                     @ApiResponse(description = "Requisição Inválida", responseCode = "400", content = @Content),
@@ -48,12 +48,12 @@ public class OrcamentoController {
                     @ApiResponse(description = "Erro Interno do Servidor", responseCode = "500", content = @Content)
             }
     )
-    public ResponseEntity<OrcamentoResponseDTO> criarOrcamento(@RequestBody @Valid OrcamentoRequestDTO orcamentoDTO) {
-        Orcamento orcamentoSalvo = orcamentoService.criarOrcamento(orcamentoDTO);
-        OrcamentoResponseDTO responseDTO = mapToOrcamentoResponseDTO(orcamentoSalvo);
-        return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
+    public ResponseEntity<OrcamentoResponseDTO> criarOrcamento(
+           @Valid @RequestBody OrcamentoRequestDTO dto) {
+        OrcamentoResponseDTO response = orcamentoService.criarOrcamento(dto);
+        URI location = URI.create("/orcamentos/" + response.getId());
+        return ResponseEntity.created(location).body(response);
     }
-    
     
     @GetMapping("/{id}")
     @Operation(summary = "Busca um orçamento por ID",
@@ -70,13 +70,12 @@ public class OrcamentoController {
                     @ApiResponse(description = "Não Autorizado", responseCode = "401", content = @Content),
                     @ApiResponse(description = "Erro Interno do Servidor", responseCode = "500", content = @Content)
             })
-    public ResponseEntity<OrcamentoResponseDTO> buscarOrcamentoPorId(@PathVariable Long id) {
-        Orcamento orcamento = orcamentoService.buscarOrcamentoPorId(id);
-        OrcamentoResponseDTO responseDTO = mapToOrcamentoResponseDTO(orcamento);
-        return ResponseEntity.ok(responseDTO);
+    public ResponseEntity<OrcamentoResponseDTO> buscarOrcamentoPorId(
+            @PathVariable Long id) {
+        OrcamentoResponseDTO response = orcamentoService.buscarOrcamentoPorId(id);
+        return ResponseEntity.ok(response);
     }
     
-   
     @GetMapping
     @Operation(summary = "Lista todos os orçamentos",
             description = "Retorna uma lista de todos os orçamentos cadastrados no sistema.",
@@ -84,7 +83,6 @@ public class OrcamentoController {
             responses = {
                     @ApiResponse(description = "Lista de Orçamentos Obtida com Sucesso", responseCode = "200",
                             content = @Content(mediaType = "application/json",
-                                    // Como é uma lista, usamos arraySchema
                                     array = @io.swagger.v3.oas.annotations.media.ArraySchema(schema = @Schema(implementation = OrcamentoResponseDTO.class))
                             )
                     ),
@@ -93,11 +91,8 @@ public class OrcamentoController {
             }
     )
     public ResponseEntity<List<OrcamentoResponseDTO>> listarTodosOrcamentos() {
-        List<Orcamento> orcamentos = orcamentoService.listarTodosOrcamentos();
-        List<OrcamentoResponseDTO> responseDTOs = orcamentos.stream()
-                .map(this::mapToOrcamentoResponseDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(responseDTOs);
+        List<OrcamentoResponseDTO> list = orcamentoService.listarTodosOrcamentos();
+        return ResponseEntity.ok(list);
     }
     
     @PutMapping("/{id}")
@@ -116,10 +111,11 @@ public class OrcamentoController {
                     @ApiResponse(description = "Erro Interno do Servidor", responseCode = "500", content = @Content)
             }
     )
-    public ResponseEntity<OrcamentoResponseDTO> atualizarOrcamento(@PathVariable Long id, @RequestBody @Valid OrcamentoRequestDTO orcamentoDTO) {
-        Orcamento orcamentoAtualizado = orcamentoService.atualizarOrcamento(id, orcamentoDTO);
-        OrcamentoResponseDTO responseDTO = mapToOrcamentoResponseDTO(orcamentoAtualizado);
-        return ResponseEntity.ok(responseDTO);
+    public ResponseEntity<OrcamentoResponseDTO> atualizarOrcamento(
+            @PathVariable Long id,
+            @RequestBody OrcamentoRequestDTO dto) {
+        OrcamentoResponseDTO response = orcamentoService.atualizarOrcamento(id, dto);
+        return ResponseEntity.ok(response);
     }
     
     @DeleteMapping("/{id}")
@@ -134,49 +130,9 @@ public class OrcamentoController {
                     @ApiResponse(description = "Erro Interno do Servidor", responseCode = "500", content = @Content)
             }
     )
-    public ResponseEntity<Void> deletarOrcamento(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarOrcamento(
+            @PathVariable Long id) {
         orcamentoService.deletarOrcamento(id);
         return ResponseEntity.noContent().build();
-    }
-    
-    
-    private OrcamentoResponseDTO mapToOrcamentoResponseDTO(Orcamento orcamento) {
-        if (orcamento == null) {
-            return null;
-        }
-        // Usando DataMapper para os campos diretos
-        OrcamentoResponseDTO dto = DataMapper.parseObject(orcamento, OrcamentoResponseDTO.class);
-        
-        // Mapeamento customizado para o cliente
-        if (orcamento.getCliente() != null) {
-            ClienteResponseDTO clienteDto = new ClienteResponseDTO();
-            clienteDto.setId(orcamento.getCliente().getId());
-            clienteDto.setNome(orcamento.getCliente().getNome());
-            // Determinar tipoPessoa
-            if (orcamento.getCliente() instanceof PessoaFisica) {
-                clienteDto.setTipoPessoa("FISICA");
-            } else if (orcamento.getCliente() instanceof PessoaJuridica) {
-                clienteDto.setTipoPessoa("JURIDICA");
-            }
-            dto.setCliente(clienteDto);
-        }
-        
-        // Mapeamento customizado para os itens do orçamento
-        if (orcamento.getItensOrcamento() != null) {
-            dto.setItens(
-                    orcamento.getItensOrcamento().stream().map(orcamentoItem -> {
-                        ItemOrcamentoResponseDTO itemDto = new ItemOrcamentoResponseDTO();
-                        itemDto.setItemId(orcamentoItem.getItem().getId());
-                        itemDto.setNomeItem(orcamentoItem.getItem().getNome());
-                        itemDto.setDescricaoItem(orcamentoItem.getItem().getDescricao());
-                        itemDto.setPrecoUnitarioItem(orcamentoItem.getItem().getPrecoUnitario());
-                        itemDto.setQuantity(orcamentoItem.getQuantity());
-                        itemDto.setSubtotal(orcamentoItem.getSubtotal());
-                        return itemDto;
-                    }).collect(Collectors.toSet())
-            );
-        }
-       
-        return dto;
     }
 }

@@ -1,12 +1,18 @@
 package com.web2.movelcontrol.DTO;
+/*
+ * Autor: Artur Duarte
+ * Responsavel: Artur Duarte
+ */
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Date;
 import java.util.Set;
 import java.util.Objects;
+import org.springframework.hateoas.RepresentationModel;
 
 @Schema(name = "OrcamentoResponseDTO", description = "DTO para representar um orçamento na resposta da API")
-public class OrcamentoResponseDTO {
+public class OrcamentoResponseDTO  extends RepresentationModel<OrcamentoResponseDTO> {
+	
 	
 	@Schema(description = "ID do orçamento", example = "1")
 	private Long id;
@@ -24,7 +30,7 @@ public class OrcamentoResponseDTO {
 	private ClienteResponseDTO cliente;
 	
 	@Schema(description = "Lista de itens incluídos no orçamento")
-	private Set<ItemOrcamentoResponseDTO> itens; // Utilizará o ItemOrcamentoResponseDTO, antes era uma list
+	private Set<ItemOrcamentoResponseDTO> itens;
 	
 	public OrcamentoResponseDTO() {
 	}
