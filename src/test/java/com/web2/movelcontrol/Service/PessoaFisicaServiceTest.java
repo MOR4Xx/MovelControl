@@ -1,6 +1,5 @@
 package com.web2.movelcontrol.Service;
 
-import com.web2.movelcontrol.DTO.DataMapper;
 import com.web2.movelcontrol.DTO.EnderecoRequestDTO;
 import com.web2.movelcontrol.DTO.PessoaFisicaRequestDTO;
 import com.web2.movelcontrol.DTO.PessoaFisicaResponseDTO;

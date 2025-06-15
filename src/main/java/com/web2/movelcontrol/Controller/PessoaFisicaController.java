@@ -5,7 +5,6 @@
 
 package com.web2.movelcontrol.Controller;
 
-import com.web2.movelcontrol.DTO.DataMapper;
 import com.web2.movelcontrol.DTO.PessoaFisicaRequestDTO;
 import com.web2.movelcontrol.DTO.PessoaFisicaResponseDTO;
 import com.web2.movelcontrol.Exceptions.ErrorResponseDTO;
@@ -23,7 +22,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.html.parser.Entity;
 import java.util.List;
 
 @RestController

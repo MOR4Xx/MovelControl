@@ -13,7 +13,6 @@ import com.web2.movelcontrol.Exceptions.NotFoundException;
 import com.web2.movelcontrol.Model.Endereco;
 import com.web2.movelcontrol.Model.PessoaFisica;
 import com.web2.movelcontrol.Repository.PessoaFisicaRepository;
-import jakarta.persistence.Entity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,5 @@
 package com.web2.movelcontrol.Service;
 
-import com.web2.movelcontrol.DTO.DataMapper;
 import com.web2.movelcontrol.DTO.UsuarioRequestDTO;
 import com.web2.movelcontrol.DTO.UsuarioResponseDTO;
 import com.web2.movelcontrol.Exceptions.NotFoundException;
