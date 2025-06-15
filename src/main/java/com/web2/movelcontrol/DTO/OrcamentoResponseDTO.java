@@ -26,7 +26,7 @@ public class OrcamentoResponseDTO  extends RepresentationModel<OrcamentoResponse
 	private ClienteResponseDTO cliente;
 	
 	@Schema(description = "Lista de itens incluídos no orçamento")
-	private Set<ItemOrcamentoResponseDTO> itens; // Utilizará o ItemOrcamentoResponseDTO, antes era uma list
+	private Set<ItemOrcamentoResponseDTO> itens;
 	
 	public OrcamentoResponseDTO() {
 	}

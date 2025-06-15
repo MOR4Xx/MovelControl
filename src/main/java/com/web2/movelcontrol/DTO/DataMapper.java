@@ -1,10 +1,12 @@
 package com.web2.movelcontrol.DTO;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class DataMapper {
     // Podemos usar qualquer Mapper
     //private static Mapper mapper = DozerBeanMapperBuilder.buildDefault();

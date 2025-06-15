@@ -16,18 +16,18 @@ public class OrcamentoRequestDTO {
 	@Schema(description = "Data de criação do orçamento. Se não fornecida, será a data atual.", example = "2025-05-29")
 	private Date dataCriacao;
 	
-	@Schema(description = "Status do orçamento", example = "EM_ANDAMENTO")
+	@Schema(required = true, description = "Status do orçamento", example = "EM_ANDAMENTO")
 	@NotBlank(message = "O status não pode ser vazio.")
 	private String status;
 	
-	@Schema(description = "ID do cliente associado ao orçamento.", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
+	@Schema(required = true, description = "ID do cliente associado ao orçamento.", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotNull(message = "O ID do cliente não pode ser nulo.")
 	private Long clienteId;
 	
-	@Schema(description = "Lista de itens do orçamento.", requiredMode = Schema.RequiredMode.REQUIRED)
+	@Schema( description = "Lista de itens do orçamento.", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotEmpty(message = "A lista de itens não pode ser vazia.")
-	@Valid // Para que as validações dentro de ItemOrcamentoRequestDTO sejam acionadas
-	private Set<ItemOrcamentoRequestDTO> itens = new HashSet<>();
+	@Valid
+	private Set< ItemOrcamentoRequestDTO> itens = new HashSet<>();
 	
 	public OrcamentoRequestDTO() {
 	}

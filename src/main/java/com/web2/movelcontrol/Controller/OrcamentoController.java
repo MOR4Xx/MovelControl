@@ -7,8 +7,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,13 +28,13 @@ public class OrcamentoController {
     
     
     @PostMapping
-    @Operation(summary = "Cria um novo orçamento", // Resumo da operação
+    @Operation(summary = "Cria um novo orçamento",
             description = "Este endpoint permite a criação de um novo orçamento no sistema. É necessário fornecer os detalhes do orçamento, incluindo o ID do cliente e os itens desejados com suas quantidades.", // Descrição mais detalhada
-            tags = {"Orçamentos"}, // Reafirma a tag, útil se tiver múltiplas
+            tags = {"Orçamentos"},
             responses = {
-                    @ApiResponse(description = "Orçamento Criado com Sucesso", responseCode = "201", // Descrição e código HTTP para sucesso
-                            content = @Content(mediaType = "application/json", // Tipo de mídia da resposta
-                                    schema = @Schema(implementation = OrcamentoResponseDTO.class) // Schema do DTO de resposta
+                    @ApiResponse(description = "Orçamento Criado com Sucesso", responseCode = "201",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = OrcamentoResponseDTO.class)
                             )
                     ),
                     @ApiResponse(description = "Requisição Inválida", responseCode = "400", content = @Content),
@@ -44,7 +44,7 @@ public class OrcamentoController {
             }
     )
     public ResponseEntity<OrcamentoResponseDTO> criarOrcamento(
-            @RequestBody OrcamentoRequestDTO dto) {
+           @Valid @RequestBody OrcamentoRequestDTO dto) {
         OrcamentoResponseDTO response = orcamentoService.criarOrcamento(dto);
         URI location = URI.create("/orcamentos/" + response.getId());
         return ResponseEntity.created(location).body(response);
@@ -78,7 +78,6 @@ public class OrcamentoController {
             responses = {
                     @ApiResponse(description = "Lista de Orçamentos Obtida com Sucesso", responseCode = "200",
                             content = @Content(mediaType = "application/json",
-                                    // Como é uma lista, usamos arraySchema
                                     array = @io.swagger.v3.oas.annotations.media.ArraySchema(schema = @Schema(implementation = OrcamentoResponseDTO.class))
                             )
                     ),
